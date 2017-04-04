@@ -1,0 +1,8 @@
+package: github.com/coreos/terraform-provider-matchbox
+import:
+- package: github.com/hashicorp/terraform
+  version: v0.9.2
+  subpackages:
+  - helper/schema
+  - plugin
+  - terraform
