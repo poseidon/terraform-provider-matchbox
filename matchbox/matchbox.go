@@ -1,8 +1,10 @@
 package matchbox
 
-// MatchboxConfig configures a matchbox client with PEM encoded TLS credentials.
-type MatchboxConfig struct {
-	Endpoint   string
+// Config configures a matchbox client.
+type Config struct {
+	// gRPC API endpoint
+	Endpoint string
+	// PEM encoded TLS CA and client credentials
 	CA         []byte
 	ClientCert []byte
 	ClientKey  []byte
