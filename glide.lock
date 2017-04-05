@@ -1,5 +1,5 @@
-hash: 9638c46f85bf0c49e0e877e7b09b050a0bf843d1ddb5785190caecab0f694a97
-updated: 2017-04-04T13:59:04.512067936-07:00
+hash: 5a1c76373671dc0d03c2777be1e57ecec464ebaffbe4330fc27d65436bd015ad
+updated: 2017-04-05T15:36:25.18762926-07:00
 imports:
 - name: github.com/apparentlymart/go-cidr
   version: a3ebdb999b831ecb6ab8a226e31b07b2b9061c47
@@ -37,12 +37,24 @@ imports:
   version: 9fd32a8b3d3d3f9d43c341bfe098430e07609480
   subpackages:
   - netrc
+- name: github.com/coreos/matchbox
+  version: 40f13e058760d18873ecfca8c8e594f7197bf5f4
+  subpackages:
+  - matchbox/client
+  - matchbox/rpc/rpcpb
+  - matchbox/server/serverpb
+  - matchbox/storage/storagepb
 - name: github.com/go-ini/ini
   version: 6e4869b434bd001f6983749881c7ead3545887d8
+- name: github.com/golang/protobuf
+  version: 8ee79997227bf9b34611aee7946ae64735e6fd93
+  subpackages:
+  - proto
+  - protoc-gen-go
 - name: github.com/hashicorp/errwrap
   version: 7554cd9344cec97297fa6649b055a8c98c2a1e55
 - name: github.com/hashicorp/go-getter
-  version: 615ccd8621bdb3837e18be586ce15655ef52b185
+  version: e48f67b534e614bf7fbd978fd0020f61a17b7527
   subpackages:
   - helper/url
 - name: github.com/hashicorp/go-multierror
@@ -100,4 +112,25 @@ imports:
   version: 417edcfd99a4d472c262e58f22b4bfe97580f03e
 - name: github.com/satori/go.uuid
   version: 5bf94b69c6b68ee1b541973bb8e1144db23a194b
+- name: golang.org/x/net
+  version: fb93926129b8ec0056f2f458b1f519654814edf0
+  subpackages:
+  - context
+  - http2
+  - http2/hpack
+  - internal/timeseries
+  - trace
+- name: google.golang.org/grpc
+  version: 708a7f9f3283aa2d4f6132d287d78683babe55c8
+  subpackages:
+  - codes
+  - credentials
+  - grpclog
+  - internal
+  - metadata
+  - naming
+  - peer
+  - stats
+  - tap
+  - transport
 testImports: []
