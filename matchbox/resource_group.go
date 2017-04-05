@@ -27,10 +27,12 @@ func resourceGroup() *schema.Resource {
 			"selector": &schema.Schema{
 				Type:     schema.TypeMap,
 				Optional: true,
+				Elem:     schema.TypeString,
 			},
 			"metadata": &schema.Schema{
 				Type:     schema.TypeMap,
 				Optional: true,
+				Elem:     schema.TypeString,
 			},
 		},
 	}

@@ -18,7 +18,7 @@ resource "matchbox_profile" "install-reboot" {
 // Create install-reboot CoreOS config resource
 resource "matchbox_config" "install-reboot" {
   name = "install-reboot.yaml.tmpl"
-  contents = "${file("./install-reboot.yaml.tmpl")}"
+  contents = "${file("./cl/install-reboot.yaml.tmpl")}"
 }
 
 resource "matchbox_group" "default" {
@@ -29,5 +29,6 @@ resource "matchbox_group" "default" {
     coreos_version = "1235.9.0"
     ignition_endpoint = "http://matchbox.example.com:8080/ignition"
     baseurl = "http://matchbox.example.com:8080/assets/coreos"
+    ssh_authorized_key = "${var.ssh_authorized_key}"
   }
 }
