@@ -3,7 +3,9 @@ resource "matchbox_profile" "install-reboot" {
   name = "install-reboot"
   config = "${matchbox_config.install-reboot.name}"
   kernel = "/assets/coreos/1235.9.0/coreos_production_pxe.vmlinuz"
-  initrd = "/assets/coreos/1235.9.0/coreos_production_pxe_image.cpio.gz"
+  initrd = [
+    "/assets/coreos/1235.9.0/coreos_production_pxe_image.cpio.gz"
+  ]
   args = [
     "coreos.config.url=http://matchbox.example.com:8080/ignition?uuid=$${uuid}&mac=$${mac:hexhyp}",
     "coreos.first_boot=yes",

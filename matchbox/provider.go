@@ -41,11 +41,12 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	clientCert := d.Get("client_cert").(string)
 	clientKey := d.Get("client_key").(string)
 
-	config := Config{
+	config := &Config{
 		Endpoint:   d.Get("endpoint").(string),
 		ClientCert: []byte(clientCert),
 		ClientKey:  []byte(clientKey),
 		CA:         []byte(ca),
 	}
-	return config, nil
+
+	return NewMatchboxClient(config)
 }

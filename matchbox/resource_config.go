@@ -1,6 +1,10 @@
 package matchbox
 
 import (
+	"context"
+
+	matchbox "github.com/coreos/matchbox/matchbox/client"
+	"github.com/coreos/matchbox/matchbox/server/serverpb"
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
@@ -24,7 +28,18 @@ func resourceConfig() *schema.Resource {
 }
 
 func resourceConfigCreate(d *schema.ResourceData, meta interface{}) error {
-	return nil
+	client := meta.(*matchbox.Client)
+	ctx := context.TODO()
+
+	name := d.Get("name").(string)
+
+	_, err := client.Ignition.IgnitionPut(ctx, &serverpb.IgnitionPutRequest{
+		Name:   name,
+		Config: []byte(d.Get("contents").(string)),
+	})
+
+	d.SetId(name)
+	return err
 }
 
 func resourceConfigRead(d *schema.ResourceData, meta interface{}) error {
