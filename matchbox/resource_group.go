@@ -13,26 +13,30 @@ func resourceGroup() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceGroupCreate,
 		Read:   resourceGroupRead,
-		Update: resourceGroupUpdate,
 		Delete: resourceGroupDelete,
+
 		Schema: map[string]*schema.Schema{
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 			"profile": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 			"selector": &schema.Schema{
 				Type:     schema.TypeMap,
 				Optional: true,
 				Elem:     schema.TypeString,
+				ForceNew: true,
 			},
 			"metadata": &schema.Schema{
 				Type:     schema.TypeMap,
 				Optional: true,
 				Elem:     schema.TypeString,
+				ForceNew: true,
 			},
 		},
 	}
@@ -63,18 +67,31 @@ func resourceGroupCreate(d *schema.ResourceData, meta interface{}) error {
 	_, err = client.Groups.GroupPut(ctx, &serverpb.GroupPutRequest{
 		Group: group,
 	})
-	d.SetId(name)
+	if err != nil {
+		return err
+	}
+
+	d.SetId(group.GetId())
 	return err
 }
 
 func resourceGroupRead(d *schema.ResourceData, meta interface{}) error {
-	return nil
-}
+	client := meta.(*matchbox.Client)
+	ctx := context.TODO()
 
-func resourceGroupUpdate(d *schema.ResourceData, meta interface{}) error {
-	return nil
+	name := d.Get("name").(string)
+	_, err := client.Groups.GroupGet(ctx, &serverpb.GroupGetRequest{
+		Id: name,
+	})
+	if err != nil {
+		// resource doesn't exist anymore
+		d.SetId("")
+		return nil
+	}
+	return err
 }
 
 func resourceGroupDelete(d *schema.ResourceData, meta interface{}) error {
+	// TODO: Delete API is not yet implemented
 	return nil
 }

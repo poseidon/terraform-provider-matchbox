@@ -13,20 +13,23 @@ func resourceProfile() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceProfileCreate,
 		Read:   resourceProfileRead,
-		Update: resourceProfileUpdate,
 		Delete: resourceProfileDelete,
+
 		Schema: map[string]*schema.Schema{
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 			"config": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				ForceNew: true,
 			},
 			"kernel": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
+				ForceNew: true,
 			},
 			"initrd": &schema.Schema{
 				Type: schema.TypeList,
@@ -34,6 +37,7 @@ func resourceProfile() *schema.Resource {
 					Type: schema.TypeString,
 				},
 				Optional: true,
+				ForceNew: true,
 			},
 			"args": &schema.Schema{
 				Type: schema.TypeList,
@@ -41,6 +45,7 @@ func resourceProfile() *schema.Resource {
 					Type: schema.TypeString,
 				},
 				Optional: true,
+				ForceNew: true,
 			},
 		},
 	}
@@ -75,19 +80,31 @@ func resourceProfileCreate(d *schema.ResourceData, meta interface{}) error {
 	_, err := client.Profiles.ProfilePut(ctx, &serverpb.ProfilePutRequest{
 		Profile: profile,
 	})
+	if err != nil {
+		return err
+	}
 
-	d.SetId(name)
+	d.SetId(profile.GetId())
 	return err
 }
 
 func resourceProfileRead(d *schema.ResourceData, meta interface{}) error {
-	return nil
-}
+	client := meta.(*matchbox.Client)
+	ctx := context.TODO()
 
-func resourceProfileUpdate(d *schema.ResourceData, meta interface{}) error {
-	return nil
+	name := d.Get("name").(string)
+	_, err := client.Profiles.ProfileGet(ctx, &serverpb.ProfileGetRequest{
+		Id: name,
+	})
+	if err != nil {
+		// resource doesn't exist anymore
+		d.SetId("")
+		return nil
+	}
+	return err
 }
 
 func resourceProfileDelete(d *schema.ResourceData, meta interface{}) error {
+	// TODO: Delete API is not yet implemented
 	return nil
 }
