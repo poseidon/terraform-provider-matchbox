@@ -92,6 +92,16 @@ func resourceGroupRead(d *schema.ResourceData, meta interface{}) error {
 }
 
 func resourceGroupDelete(d *schema.ResourceData, meta interface{}) error {
-	// TODO: Delete API is not yet implemented
+	client := meta.(*matchbox.Client)
+	ctx := context.TODO()
+
+	name := d.Get("name").(string)
+	_, err := client.Groups.GroupDelete(ctx, &serverpb.GroupDeleteRequest{
+		Id: name,
+	})
+	if err != nil {
+		return err
+	}
+	d.SetId("")
 	return nil
 }

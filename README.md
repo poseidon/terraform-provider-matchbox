@@ -2,12 +2,15 @@
 
 The Matchbox provider is used to interact with the [matchbox](https://github.com/coreos/matchbox) API. Matchbox matches bare-metal machines by labels (e.g. MAC address) to Profiles with iPXE configs and Container Linux configs to provision clusters.
 
+## Status
+
+Warning, this project is pre-alpha. Breaking changes are expected. Matchbox latest may be required.
+
 ## Usage
 
 Install [Terraform](https://www.terraform.io/downloads.html) v0.9.2. Add the `terraform-provider-matchbox` plugin binary somewhere on your filesystem.
 
 ```sh
-# Warning! Project is pre-alpha / in-development
 go get -u github.com/coreos/terraform-provider-matchbox
 ```
 

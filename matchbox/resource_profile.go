@@ -105,6 +105,16 @@ func resourceProfileRead(d *schema.ResourceData, meta interface{}) error {
 }
 
 func resourceProfileDelete(d *schema.ResourceData, meta interface{}) error {
-	// TODO: Delete API is not yet implemented
+	client := meta.(*matchbox.Client)
+	ctx := context.TODO()
+
+	name := d.Get("name").(string)
+	_, err := client.Profiles.ProfileDelete(ctx, &serverpb.ProfileDeleteRequest{
+		Id: name,
+	})
+	if err != nil {
+		return err
+	}
+	d.SetId("")
 	return nil
 }
