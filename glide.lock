@@ -1,5 +1,5 @@
-hash: 5a1c76373671dc0d03c2777be1e57ecec464ebaffbe4330fc27d65436bd015ad
-updated: 2017-04-05T15:36:25.18762926-07:00
+hash: 998a847f1808a838251674be81837066e94cdea106cf29544288082c5349726d
+updated: 2017-04-10T15:15:53.439209159-07:00
 imports:
 - name: github.com/apparentlymart/go-cidr
   version: a3ebdb999b831ecb6ab8a226e31b07b2b9061c47
@@ -38,7 +38,7 @@ imports:
   subpackages:
   - netrc
 - name: github.com/coreos/matchbox
-  version: 40f13e058760d18873ecfca8c8e594f7197bf5f4
+  version: 3464e38c85481d8bf91ba0652da572b355fe88f0
   subpackages:
   - matchbox/client
   - matchbox/rpc/rpcpb
