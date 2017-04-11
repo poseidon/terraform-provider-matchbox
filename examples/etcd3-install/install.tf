@@ -1,7 +1,6 @@
 // Create a CoreOS install-reboot profile
 resource "matchbox_profile" "install-reboot" {
   name = "install-reboot"
-  config = "${matchbox_config.install-reboot.name}"
   kernel = "/assets/coreos/1235.9.0/coreos_production_pxe.vmlinuz"
   initrd = [
     "/assets/coreos/1235.9.0/coreos_production_pxe_image.cpio.gz"
@@ -13,6 +12,7 @@ resource "matchbox_profile" "install-reboot" {
     "console=ttyS0",
     "coreos.autologin"
   ]
+  container_linux_config = "${matchbox_config.install-reboot.name}"
 }
 
 // Create install-reboot CoreOS config resource

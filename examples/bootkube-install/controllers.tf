@@ -1,10 +1,10 @@
 // Create a bootkube-controller profile
 resource "matchbox_profile" "bootkube-controller" {
   name = "bootkube-controller"
-  config = "${matchbox_config.bootkube-controller.name}"
+  container_linux_config = "${matchbox_config.bootkube-controller.name}"
 }
 
-// Create bootkube-controller CoreOS config resource
+// Create bootkube-controller Container Linux Config resource
 resource "matchbox_config" "bootkube-controller" {
   name = "bootkube-controller.yaml.tmpl"
   contents = "${file("./cl/bootkube-controller.yaml.tmpl")}"

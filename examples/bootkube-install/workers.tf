@@ -1,10 +1,10 @@
 // Create a bootkube-worker profile
 resource "matchbox_profile" "bootkube-worker" {
   name = "bootkube-worker"
-  config = "${matchbox_config.bootkube-worker.name}"
+  container_linux_config = "${matchbox_config.bootkube-worker.name}"
 }
 
-// Create bootkube-worker CoreOS config resource
+// Create bootkube-worker Container Linux Config resource
 resource "matchbox_config" "bootkube-worker" {
   name = "bootkube-worker.yaml.tmpl"
   contents = "${file("./cl/bootkube-worker.yaml.tmpl")}"

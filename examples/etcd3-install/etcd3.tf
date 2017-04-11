@@ -1,10 +1,10 @@
 // Create an etcd3 profile
 resource "matchbox_profile" "etcd3" {
   name = "etcd3"
-  config = "${matchbox_config.etcd3.name}"
+  container_linux_config = "${matchbox_config.etcd3.name}"
 }
 
-// Create etcd3 CoreOS config resource
+// Create etcd3 Container Linux Config resource
 resource "matchbox_config" "etcd3" {
   name = "etcd3.yaml.tmpl"
   contents = "${file("./cl/etcd3.yaml.tmpl")}"

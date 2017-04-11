@@ -21,7 +21,7 @@ func resourceProfile() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
-			"config": &schema.Schema{
+			"container_linux_config": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 				ForceNew: true,
@@ -69,7 +69,7 @@ func resourceProfileCreate(d *schema.ResourceData, meta interface{}) error {
 
 	profile := &storagepb.Profile{
 		Id:         name,
-		IgnitionId: d.Get("config").(string),
+		IgnitionId: d.Get("container_linux_config").(string),
 		Boot: &storagepb.NetBoot{
 			Kernel: d.Get("kernel").(string),
 			Initrd: initrds,
