@@ -1,5 +1,5 @@
-hash: 998a847f1808a838251674be81837066e94cdea106cf29544288082c5349726d
-updated: 2017-04-10T15:15:53.439209159-07:00
+hash: 6076bcc5da3462c0ea61752149a2d3617235ed2cc06c265bf4b7f48bb7126154
+updated: 2017-04-11T13:42:07.665661561-07:00
 imports:
 - name: github.com/apparentlymart/go-cidr
   version: a3ebdb999b831ecb6ab8a226e31b07b2b9061c47
@@ -38,7 +38,7 @@ imports:
   subpackages:
   - netrc
 - name: github.com/coreos/matchbox
-  version: 3464e38c85481d8bf91ba0652da572b355fe88f0
+  version: 43ce5c1d91b688ce863495bf2c2b7816568fdb2a
   subpackages:
   - matchbox/client
   - matchbox/rpc/rpcpb
@@ -47,7 +47,7 @@ imports:
 - name: github.com/go-ini/ini
   version: 6e4869b434bd001f6983749881c7ead3545887d8
 - name: github.com/golang/protobuf
-  version: 8ee79997227bf9b34611aee7946ae64735e6fd93
+  version: 2bba0603135d7d7f5cb73b2125beeda19c09f4ef
   subpackages:
   - proto
   - protoc-gen-go
@@ -121,12 +121,13 @@ imports:
   - internal/timeseries
   - trace
 - name: google.golang.org/grpc
-  version: 708a7f9f3283aa2d4f6132d287d78683babe55c8
+  version: 8050b9cbc271307e5a716a9d782803d09b0d6f2d
   subpackages:
   - codes
   - credentials
   - grpclog
   - internal
+  - keepalive
   - metadata
   - naming
   - peer
