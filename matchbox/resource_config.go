@@ -48,12 +48,32 @@ func resourceConfigCreate(d *schema.ResourceData, meta interface{}) error {
 }
 
 func resourceConfigRead(d *schema.ResourceData, meta interface{}) error {
-	// TODO: Read API is not yet implemented. Must delete and re-create each time.
-	d.SetId("")
-	return nil
+	client := meta.(*matchbox.Client)
+	ctx := context.TODO()
+
+	name := d.Get("name").(string)
+	_, err := client.Ignition.IgnitionGet(ctx, &serverpb.IgnitionGetRequest{
+		Name: name,
+	})
+	if err != nil {
+		// resource doesn't exist anymore
+		d.SetId("")
+		return nil
+	}
+	return err
 }
 
 func resourceConfigDelete(d *schema.ResourceData, meta interface{}) error {
-	// TODO: Delete API is not yet implemented
+	client := meta.(*matchbox.Client)
+	ctx := context.TODO()
+
+	name := d.Get("name").(string)
+	_, err := client.Ignition.IgnitionDelete(ctx, &serverpb.IgnitionDeleteRequest{
+		Name: name,
+	})
+	if err != nil {
+		return err
+	}
+	d.SetId("")
 	return nil
 }
