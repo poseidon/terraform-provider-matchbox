@@ -12,13 +12,7 @@ resource "matchbox_profile" "install-reboot" {
     "console=ttyS0",
     "coreos.autologin"
   ]
-  container_linux_config = "${matchbox_config.install-reboot.name}"
-}
-
-// Create install-reboot Container Linux Config resource
-resource "matchbox_config" "install-reboot" {
-  name = "install-reboot.yaml.tmpl"
-  contents = "${file("./cl/install-reboot.yaml.tmpl")}"
+  container_linux_config = "${file("./cl/install-reboot.yaml.tmpl")}"
 }
 
 resource "matchbox_group" "default" {

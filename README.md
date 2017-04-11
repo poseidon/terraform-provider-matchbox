@@ -4,7 +4,7 @@ The Matchbox provider is used to interact with the [matchbox](https://github.com
 
 ## Status
 
-Warning, this project is pre-alpha. Breaking changes are expected. Matchbox latest may be required.
+Warning, this project is pre-alpha. Breaking changes are expected. Matchbox latest is required.
 
 ## Usage
 
@@ -35,10 +35,9 @@ provider "matchbox" {
   ca         = "${file("~/.matchbox/ca.crt")}"
 }
 
-// Create a CoreOS install-reboot profile
-resource "matchbox_profile" "install-reboot" {
-  name = "install-reboot"
-  config = "${matchbox_config.install-reboot.name}"
+// Create a CoreOS-install profile
+resource "matchbox_profile" "coreos-install" {
+  name = "coreos-install"
   kernel = "/assets/coreos/1235.9.0/coreos_production_pxe.vmlinuz"
   initrd = [
     "/assets/coreos/1235.9.0/coreos_production_pxe_image.cpio.gz"
@@ -50,12 +49,16 @@ resource "matchbox_profile" "install-reboot" {
     "console=ttyS0",
     "coreos.autologin"
   ]
+  container_linux_config = "${file("./cl/coreos-install.yaml.tmpl")}"
 }
 
-// Match all bare-metal machines (no selector)
-resource "matchbox_group" "default" {
-  name = "default"
-  profile = "${matchbox_profile.install-reboot.name}"
+// Match a bare-metal machine
+resource "matchbox_group" "node1" {
+  name = "node1"
+  profile = "${matchbox_profile.coreos-install.name}"
+  selector {
+    mac = "52:54:00:a1:9c:ae"
+  }
   metadata {
     coreos_channel = "stable"
     coreos_version = "1235.9.0"
@@ -64,15 +67,9 @@ resource "matchbox_group" "default" {
     ssh_authorized_key = "${var.ssh_authorized_key}"
   }
 }
-
-// Define a CoreOS Container Linux Config
-resource "matchbox_config" "install-reboot" {
-  name = "install-reboot.yaml.tmpl"
-  contents = "${file("./cl/install-reboot.yaml.tmpl")}"
-}
 ```
 
-See [examples](examples) for Terraform configs which PXE boot and provision CoreOS etcd3 clusters.
+See [examples](examples) for Terraform configs which PXE boot, install CoreOS, and provision entire clusters.
 
 ## Development
 

@@ -1,13 +1,7 @@
 // Create a bootkube-worker profile
 resource "matchbox_profile" "bootkube-worker" {
   name = "bootkube-worker"
-  container_linux_config = "${matchbox_config.bootkube-worker.name}"
-}
-
-// Create bootkube-worker Container Linux Config resource
-resource "matchbox_config" "bootkube-worker" {
-  name = "bootkube-worker.yaml.tmpl"
-  contents = "${file("./cl/bootkube-worker.yaml.tmpl")}"
+  container_linux_config = "${file("./cl/bootkube-worker.yaml.tmpl")}"
 }
 
 // Create matcher groups for worker nodes
@@ -41,4 +35,3 @@ resource "matchbox_group" "node3" {
     ssh_authorized_key = "${var.ssh_authorized_key}"
   }
 }
-
