@@ -29,7 +29,6 @@ func Provider() terraform.ResourceProvider {
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			"matchbox_profile": resourceProfile(),
-			"matchbox_config":  resourceConfig(),
 			"matchbox_group":   resourceGroup(),
 		},
 		ConfigureFunc: providerConfigure,

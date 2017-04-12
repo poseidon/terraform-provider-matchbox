@@ -51,34 +51,44 @@ func resourceProfile() *schema.Resource {
 	}
 }
 
+// resourceProfileCreate creates a Profile and its associated configs. Partial
+// creates do not modify state and can be retried safely.
 func resourceProfileCreate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*matchbox.Client)
 	ctx := context.TODO()
 
+	// Profile
 	name := d.Get("name").(string)
+	clcName := containerLinuxConfigName(name)
 
 	var initrds []string
 	for _, initrd := range d.Get("initrd").([]interface{}) {
 		initrds = append(initrds, initrd.(string))
 	}
-
 	var args []string
 	for _, arg := range d.Get("args").([]interface{}) {
 		args = append(args, arg.(string))
 	}
-
 	profile := &storagepb.Profile{
 		Id:         name,
-		IgnitionId: d.Get("container_linux_config").(string),
+		IgnitionId: clcName,
 		Boot: &storagepb.NetBoot{
 			Kernel: d.Get("kernel").(string),
 			Initrd: initrds,
 			Args:   args,
 		},
 	}
-
 	_, err := client.Profiles.ProfilePut(ctx, &serverpb.ProfilePutRequest{
 		Profile: profile,
+	})
+	if err != nil {
+		return err
+	}
+
+	// Container Linux Config
+	_, err = client.Ignition.IgnitionPut(ctx, &serverpb.IgnitionPutRequest{
+		Name:   clcName,
+		Config: []byte(d.Get("container_linux_config").(string)),
 	})
 	if err != nil {
 		return err
@@ -93,21 +103,37 @@ func resourceProfileRead(d *schema.ResourceData, meta interface{}) error {
 	ctx := context.TODO()
 
 	name := d.Get("name").(string)
+	clcName := containerLinuxConfigName(name)
+
 	_, err := client.Profiles.ProfileGet(ctx, &serverpb.ProfileGetRequest{
 		Id: name,
 	})
 	if err != nil {
-		// resource doesn't exist anymore
+		// resource doesn't exist or is corrupted
 		d.SetId("")
 		return nil
 	}
-	return err
+
+	_, err = client.Ignition.IgnitionGet(ctx, &serverpb.IgnitionGetRequest{
+		Name: clcName,
+	})
+	if err != nil {
+		// resource doesn't exist or is corrupted
+		d.SetId("")
+		return nil
+	}
+
+	return nil
 }
 
+// resourceProfileDelete deletes a Profile and its associated configs. Partial
+// deletes leave state unchanged and can be retried (deleting resources which
+// no longer exist is a no-op).
 func resourceProfileDelete(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*matchbox.Client)
 	ctx := context.TODO()
 
+	// Profile
 	name := d.Get("name").(string)
 	_, err := client.Profiles.ProfileDelete(ctx, &serverpb.ProfileDeleteRequest{
 		Id: name,
@@ -115,6 +141,21 @@ func resourceProfileDelete(d *schema.ResourceData, meta interface{}) error {
 	if err != nil {
 		return err
 	}
+
+	// Container Linux Config
+	clcName := containerLinuxConfigName(name)
+	_, err = client.Ignition.IgnitionDelete(ctx, &serverpb.IgnitionDeleteRequest{
+		Name: clcName,
+	})
+	if err != nil {
+		return err
+	}
+
+	// resource can be destroyed in state
 	d.SetId("")
 	return nil
+}
+
+func containerLinuxConfigName(name string) string {
+	return name + ".yaml.tmpl"
 }

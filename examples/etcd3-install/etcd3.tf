@@ -1,13 +1,7 @@
 // Create an etcd3 profile
 resource "matchbox_profile" "etcd3" {
   name = "etcd3"
-  container_linux_config = "${matchbox_config.etcd3.name}"
-}
-
-// Create etcd3 Container Linux Config resource
-resource "matchbox_config" "etcd3" {
-  name = "etcd3.yaml.tmpl"
-  contents = "${file("./cl/etcd3.yaml.tmpl")}"
+  container_linux_config = "${file("./cl/etcd3.yaml.tmpl")}"
 }
 
 // Create matchers for 3 nodes
