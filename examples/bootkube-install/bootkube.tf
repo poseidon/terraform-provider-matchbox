@@ -17,11 +17,10 @@ resource "matchbox_group" "default" {
   }
 }
 
-// Create matcher groups for 3 machines
-
+// Create a controller matcher group
 resource "matchbox_group" "node1" {
   name = "node1"
-  profile = "${module.profiles.etcd3}"
+  profile = "${module.profiles.bootkube-controller}"
   selector {
     mac = "52:54:00:a1:9c:ae"
     os = "installed"
@@ -29,37 +28,40 @@ resource "matchbox_group" "node1" {
   metadata {
     domain_name = "node1.example.com"
     etcd_name = "node1"
-    etcd_initial_cluster = "node1=http://node1.example.com:2380,node2=http://node2.example.com:2380,node3=http://node3.example.com:2380"
+    etcd_initial_cluster = "node1=http://node1.example.com:2380"
+    k8s_dns_service_ip = "${var.k8s_dns_service_ip}"
     ssh_authorized_key = "${var.ssh_authorized_key}"
   }
 }
 
+// Create worker matcher groups
+
 resource "matchbox_group" "node2" {
   name = "node2"
-  profile = "${module.profiles.etcd3}"
+  profile = "${module.profiles.bootkube-worker}"
   selector {
     mac = "52:54:00:b2:2f:86"
     os = "installed"
   }
   metadata {
     domain_name = "node2.example.com"
-    etcd_name = "node2"
-    etcd_initial_cluster = "node1=http://node1.example.com:2380,node2=http://node2.example.com:2380,node3=http://node3.example.com:2380"
+    etcd_endpoints = "node1.example.com:2380"
+    k8s_dns_service_ip = "${var.k8s_dns_service_ip}"
     ssh_authorized_key = "${var.ssh_authorized_key}"
   }
 }
 
 resource "matchbox_group" "node3" {
   name = "node3"
-  profile = "${module.profiles.etcd3}"
+  profile = "${module.profiles.bootkube-worker}"
   selector {
     mac = "52:54:00:c3:61:77"
     os = "installed"
   }
   metadata {
     domain_name = "node3.example.com"
-    etcd_name = "node3"
-    etcd_initial_cluster = "node1=http://node1.example.com:2380,node2=http://node2.example.com:2380,node3=http://node3.example.com:2380"
+    etcd_endpoints = "node1.example.com:2380"
+    k8s_dns_service_ip = "${var.k8s_dns_service_ip}"
     ssh_authorized_key = "${var.ssh_authorized_key}"
   }
 }

@@ -1,2 +1,3 @@
 *.tfstate*
 assets
+.terraform
