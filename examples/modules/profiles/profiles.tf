@@ -1,16 +1,15 @@
 // CoreOS Install Profile
 resource "matchbox_profile" "coreos-install" {
   name = "coreos-install"
-  kernel = "/assets/coreos/1235.9.0/coreos_production_pxe.vmlinuz"
+  kernel = "/assets/coreos/${var.coreos_version}/coreos_production_pxe.vmlinuz"
   initrd = [
-    "/assets/coreos/1235.9.0/coreos_production_pxe_image.cpio.gz"
+    "/assets/coreos/${var.coreos_version}/coreos_production_pxe_image.cpio.gz"
   ]
   args = [
-    "coreos.config.url=http://matchbox.example.com:8080/ignition?uuid=$${uuid}&mac=$${mac:hexhyp}",
+    "coreos.config.url=${var.matchbox_http_endpoint}/ignition?uuid=$${uuid}&mac=$${mac:hexhyp}",
     "coreos.first_boot=yes",
     "console=tty0",
-    "console=ttyS0",
-    "coreos.autologin"
+    "console=ttyS0"
   ]
   container_linux_config = "${file("${path.module}/cl/coreos-install.yaml.tmpl")}"
 }

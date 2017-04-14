@@ -1,6 +1,8 @@
 // Create popular machine Profiles (convenience module)
 module "profiles" {
   source = "../modules/profiles"
+  matchbox_http_endpoint = "http://matchbox.example.com:8080"
+  coreos_version = "1235.9.0"
 }
 
 // Install CoreOS to disk before provisioning
