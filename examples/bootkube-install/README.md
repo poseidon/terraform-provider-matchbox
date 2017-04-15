@@ -1,6 +1,6 @@
 # Self-hosted Kubernetes
 
-The self-hosted Kubernetes example provisions a 3 node "self-hosted" Kubernetes v1.5.6 cluster. On-host kubelets wait for an apiserver to become reachable, then yield to kubelet pods scheduled via daemonset. [bootkube](https://github.com/kubernetes-incubator/bootkube) is run on any controller to bootstrap a temporary apiserver which schedules control plane components as pods before exiting. An etcd cluster backs Kubernetes and coordinates CoreOS auto-updates (enabled for disk installs).
+The self-hosted Kubernetes example provisions a 3 node "self-hosted" Kubernetes v1.6.1 cluster. On-host kubelets wait for an apiserver to become reachable, then yield to kubelet pods scheduled via daemonset. [bootkube](https://github.com/kubernetes-incubator/bootkube) is run on any controller to bootstrap a temporary apiserver which schedules control plane components as pods before exiting. An etcd cluster backs Kubernetes and coordinates CoreOS auto-updates (enabled for disk installs).
 
 ## Requirements
 
@@ -9,11 +9,11 @@ The self-hosted Kubernetes example provisions a 3 node "self-hosted" Kubernetes 
 * 3 machines with known DNS names and MAC addresses for this example
 * Matchbox provider credentials: a `client.crt`, `client.key`, and `ca.crt`.
 
-Install [bootkube](https://github.com/kubernetes-incubator/bootkube/releases) v0.3.13 and add it somewhere on your PATH.
+Install [bootkube](https://github.com/kubernetes-incubator/bootkube/releases) v0.4.0 and add it somewhere on your PATH.
 
 ```sh
 bootkube version
-Version v0.3.13
+Version v0.4.0
 ```
 
 Use the `bootkube` tool to render Kubernetes manifests and credentials into an `--asset-dir`. Later, `bootkube` will schedule these manifests during bootstrapping and the credentials will be used to access your cluster.
