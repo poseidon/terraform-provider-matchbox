@@ -5,6 +5,6 @@ variable "ssh_authorized_key" {
 
 variable "k8s_dns_service_ip" {
   type = "string"
-  default = "10.3.0.1"
+  default = "10.3.0.10"
   description = "Cluster DNS servce IP address passed via the Kubelet --cluster-dns flag"
 }
