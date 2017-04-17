@@ -69,7 +69,7 @@ resource "matchbox_group" "node1" {
 }
 ```
 
-See [examples](examples) for Terraform configs which PXE boot, install CoreOS, and provision entire clusters.
+See [examples](https://github.com/coreos/matchbox/tree/master/examples/terraform) for Terraform configs which PXE boot, install CoreOS, and provision entire clusters.
 
 ## Development
 
