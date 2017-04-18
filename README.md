@@ -4,13 +4,14 @@ The Matchbox provider is used to interact with the [matchbox](https://github.com
 
 ## Status
 
-Warning, this project is pre-alpha. Breaking changes are expected. Matchbox latest is required.
+This project is alpha. Breaking changes may be made. Matchbox v0.6.0 is required.
 
 ## Usage
 
 Install [Terraform](https://www.terraform.io/downloads.html) v0.9.2. Add the `terraform-provider-matchbox` plugin binary somewhere on your filesystem.
 
 ```sh
+# dev
 go get -u github.com/coreos/terraform-provider-matchbox
 ```
 
