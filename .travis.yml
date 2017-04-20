@@ -1,0 +1,8 @@
+language: go
+go:
+  - 1.8
+install:
+  - go get github.com/golang/lint/golint
+script:
+  - make build
+  - make test
