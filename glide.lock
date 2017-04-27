@@ -1,8 +1,8 @@
-hash: 6076bcc5da3462c0ea61752149a2d3617235ed2cc06c265bf4b7f48bb7126154
-updated: 2017-04-11T13:42:07.665661561-07:00
+hash: dcd820cb58b3cfa2faee7f4945eb24071cef2739497d2e7fc3b8e8cff4a98aeb
+updated: 2017-04-27T10:31:54.4824645-07:00
 imports:
 - name: github.com/apparentlymart/go-cidr
-  version: a3ebdb999b831ecb6ab8a226e31b07b2b9061c47
+  version: 7e4b007599d4e2076d9a81be723b3912852dda2c
   subpackages:
   - cidr
 - name: github.com/aws/aws-sdk-go
@@ -60,13 +60,13 @@ imports:
 - name: github.com/hashicorp/go-multierror
   version: ed905158d87462226a13fe39ddf685ea65f1c11f
 - name: github.com/hashicorp/go-plugin
-  version: f72692aebca2008343a9deb06ddb4b17f7051c15
+  version: 1ffca25a1118915effa6d7585a0550fec8cb44fd
 - name: github.com/hashicorp/go-uuid
   version: 64130c7a86d732268a38cb04cfbaf0cc987fda98
 - name: github.com/hashicorp/go-version
   version: 03c5bf6be031b6dd45afec16b1cf94fc8938bc77
 - name: github.com/hashicorp/hcl
-  version: 630949a3c5fa3c613328e1b8256052cbc2327c9b
+  version: 7fa7fff964d035e8a162cce3a164b3ad02ad651b
   subpackages:
   - hcl/ast
   - hcl/parser
@@ -83,7 +83,7 @@ imports:
   - parser
   - scanner
 - name: github.com/hashicorp/terraform
-  version: 6365269541c8e3150ebe638a5c555e1424071417
+  version: 277bbf65d1141207dbb30485bf124b1dba08f80f
   subpackages:
   - config
   - config/module
@@ -107,7 +107,7 @@ imports:
 - name: github.com/mitchellh/hashstructure
   version: ab25296c0f51f1022f01cd99dfb45f1775de8799
 - name: github.com/mitchellh/mapstructure
-  version: 53818660ed4955e899c0bcafa97299a388bd7c8e
+  version: cc8532a8e9a55ea36402aa21efdf403a60d34096
 - name: github.com/mitchellh/reflectwalk
   version: 417edcfd99a4d472c262e58f22b4bfe97580f03e
 - name: github.com/satori/go.uuid

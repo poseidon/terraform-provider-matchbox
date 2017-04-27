@@ -7,7 +7,7 @@ import:
   - matchbox/server/serverpb
   - matchbox/storage/storagepb
 - package: github.com/hashicorp/terraform
-  version: v0.9.2
+  version: v0.9.4
   subpackages:
   - helper/schema
   - plugin
