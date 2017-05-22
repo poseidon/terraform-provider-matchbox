@@ -2,6 +2,8 @@ package matchbox
 
 import (
 	"context"
+	"errors"
+	"fmt"
 
 	matchbox "github.com/coreos/matchbox/matchbox/client"
 	"github.com/coreos/matchbox/matchbox/server/serverpb"
@@ -19,6 +21,11 @@ func resourceProfile() *schema.Resource {
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
+			},
+			"raw_ignition": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
 				ForceNew: true,
 			},
 			"container_linux_config": &schema.Schema{
@@ -57,9 +64,13 @@ func resourceProfileCreate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*matchbox.Client)
 	ctx := context.TODO()
 
+	if err := validateResourceProfile(d); err != nil {
+		return err
+	}
+
 	// Profile
 	name := d.Get("name").(string)
-	clcName := containerLinuxConfigName(name)
+	clcName, clc := containerLinuxConfig(d)
 
 	var initrds []string
 	for _, initrd := range d.Get("initrd").([]interface{}) {
@@ -88,7 +99,7 @@ func resourceProfileCreate(d *schema.ResourceData, meta interface{}) error {
 	// Container Linux Config
 	_, err = client.Ignition.IgnitionPut(ctx, &serverpb.IgnitionPutRequest{
 		Name:   clcName,
-		Config: []byte(d.Get("container_linux_config").(string)),
+		Config: []byte(clc),
 	})
 	if err != nil {
 		return err
@@ -98,13 +109,24 @@ func resourceProfileCreate(d *schema.ResourceData, meta interface{}) error {
 	return err
 }
 
+func validateResourceProfile(d *schema.ResourceData) error {
+	_, hasRAW := d.GetOk("raw_ignition")
+	_, hasCLC := d.GetOk("container_linux_config")
+	if hasCLC && hasRAW {
+		return errors.New("container_linux_config and raw_ignition are mutually exclusive")
+	}
+
+	if !hasCLC && !hasRAW {
+		return errors.New("container_linux_config or raw_ignition are required")
+	}
+	return nil
+}
+
 func resourceProfileRead(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*matchbox.Client)
 	ctx := context.TODO()
 
 	name := d.Get("name").(string)
-	clcName := containerLinuxConfigName(name)
-
 	_, err := client.Profiles.ProfileGet(ctx, &serverpb.ProfileGetRequest{
 		Id: name,
 	})
@@ -115,7 +137,7 @@ func resourceProfileRead(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	_, err = client.Ignition.IgnitionGet(ctx, &serverpb.IgnitionGetRequest{
-		Name: clcName,
+		Name: containerLinuxConfigName(d),
 	})
 	if err != nil {
 		// resource doesn't exist or is corrupted
@@ -143,9 +165,8 @@ func resourceProfileDelete(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	// Container Linux Config
-	clcName := containerLinuxConfigName(name)
 	_, err = client.Ignition.IgnitionDelete(ctx, &serverpb.IgnitionDeleteRequest{
-		Name: clcName,
+		Name: containerLinuxConfigName(d),
 	})
 	if err != nil {
 		return err
@@ -156,6 +177,21 @@ func resourceProfileDelete(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
-func containerLinuxConfigName(name string) string {
-	return name + ".yaml.tmpl"
+func containerLinuxConfigName(d *schema.ResourceData) string {
+	filename, _ := containerLinuxConfig(d)
+	return filename
+}
+
+func containerLinuxConfig(d *schema.ResourceData) (filename, config string) {
+	name := d.Get("name").(string)
+
+	if content, ok := d.GetOk("container_linux_config"); ok {
+		return fmt.Sprintf("%s.yaml.tmpl", name), content.(string)
+	}
+
+	if content, ok := d.GetOk("raw_ignition"); ok {
+		return fmt.Sprintf("%s.ign", name), content.(string)
+	}
+
+	return
 }

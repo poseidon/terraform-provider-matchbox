@@ -2,6 +2,7 @@ package matchbox
 
 import (
 	"fmt"
+	"regexp"
 	"testing"
 
 	"github.com/coreos/matchbox/matchbox/storage/testfakes"
@@ -78,6 +79,107 @@ func TestResourceProfile(t *testing.T) {
 		Steps: []resource.TestStep{{
 			Config: srv.AddProviderConfig(hcl),
 			Check:  check,
+		}},
+	})
+
+}
+
+func TestResourceProfile_withIgnition(t *testing.T) {
+	srv := NewFixtureServer(clientTLSInfo, serverTLSInfo, testfakes.NewFixedStore())
+	go srv.Start()
+	defer srv.Stop()
+
+	hcl := `
+		resource "matchbox_profile" "default" {
+			name   = "default"
+			kernel = "foo"
+
+			initrd = [
+				"bar",
+			]
+
+			args = [
+				"qux",
+			]
+
+			raw_ignition = "baz"
+		}
+	`
+
+	check := func(s *terraform.State) error {
+		profile, err := srv.Store.ProfileGet("default")
+		if err != nil {
+			return err
+		}
+
+		if profile.GetIgnitionId() != "default.ign" {
+			return fmt.Errorf("profile, found %q", profile.GetIgnitionId())
+		}
+
+		ignition, err := srv.Store.IgnitionGet("default.ign")
+		if err != nil {
+			return err
+		}
+
+		if ignition != "baz" {
+			return fmt.Errorf("raw_ignition, found %q", ignition)
+		}
+
+		return nil
+	}
+
+	resource.Test(t, resource.TestCase{
+		IsUnitTest: true,
+		Providers:  providers,
+		Steps: []resource.TestStep{{
+			Config: srv.AddProviderConfig(hcl),
+			Check:  check,
+		}},
+	})
+
+}
+
+func TestResourceProfile_withIgnitionAndContainerLinuxConfig(t *testing.T) {
+	srv := NewFixtureServer(clientTLSInfo, serverTLSInfo, testfakes.NewFixedStore())
+	go srv.Start()
+	defer srv.Stop()
+
+	hcl := `
+		resource "matchbox_profile" "default" {
+			name   = "default"
+			container_linux_config = "baz"
+			raw_ignition = "baz"
+		}
+	`
+
+	resource.Test(t, resource.TestCase{
+		IsUnitTest: true,
+		Providers:  providers,
+		Steps: []resource.TestStep{{
+			Config:      srv.AddProviderConfig(hcl),
+			ExpectError: regexp.MustCompile("are mutually exclusive"),
+		}},
+	})
+
+}
+
+func TestResourceProfile_withoutPayload(t *testing.T) {
+	srv := NewFixtureServer(clientTLSInfo, serverTLSInfo, testfakes.NewFixedStore())
+	go srv.Start()
+	defer srv.Stop()
+
+	hcl := `
+		resource "matchbox_profile" "default" {
+			name   = "default"
+		}
+	`
+
+	resource.Test(t, resource.TestCase{
+		IsUnitTest: true,
+		Providers:  providers,
+		Steps: []resource.TestStep{{
+			Config:      srv.AddProviderConfig(hcl),
+			ExpectError: regexp.MustCompile("are required"),
 		}},
 	})
 
