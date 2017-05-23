@@ -12,3 +12,4 @@ import:
   - helper/schema
   - plugin
   - terraform
+  - helper/resource
