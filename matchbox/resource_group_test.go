@@ -10,8 +10,8 @@ import (
 )
 
 func TestResourceGroup(t *testing.T) {
-	srv := NewFixtureServer(testfakes.NewFixedStore())
-	srv.Start()
+	srv := NewFixtureServer(clientTLSInfo, serverTLSInfo, testfakes.NewFixedStore())
+	go srv.Start()
 	defer srv.Stop()
 
 	hcl := `
