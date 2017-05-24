@@ -1,12 +1,12 @@
-hash: dcd820cb58b3cfa2faee7f4945eb24071cef2739497d2e7fc3b8e8cff4a98aeb
-updated: 2017-04-27T10:31:54.4824645-07:00
+hash: 9b9a69eacd65ab439ba6065ff36616c3bc22b273d33995f248517a4ebfb3b7d2
+updated: 2017-05-23T18:24:48.889340849-07:00
 imports:
 - name: github.com/apparentlymart/go-cidr
-  version: 7e4b007599d4e2076d9a81be723b3912852dda2c
+  version: a3ebdb999b831ecb6ab8a226e31b07b2b9061c47
   subpackages:
   - cidr
 - name: github.com/aws/aws-sdk-go
-  version: d6b4bfeba6997082629986cac2a932a233ba745e
+  version: 4bbd6fa3fdede4c68e941248f974b8951c17de89
   subpackages:
   - aws
   - aws/awserr
@@ -20,17 +20,16 @@ imports:
   - aws/credentials/stscreds
   - aws/defaults
   - aws/ec2metadata
+  - aws/endpoints
   - aws/request
   - aws/session
   - aws/signer/v4
-  - private/endpoints
   - private/protocol
   - private/protocol/query
   - private/protocol/query/queryutil
   - private/protocol/rest
   - private/protocol/restxml
   - private/protocol/xml/xmlutil
-  - private/waiter
   - service/s3
   - service/sts
 - name: github.com/bgentry/go-netrc
@@ -41,9 +40,18 @@ imports:
   version: 43ce5c1d91b688ce863495bf2c2b7816568fdb2a
   subpackages:
   - matchbox/client
+  - matchbox/rpc
   - matchbox/rpc/rpcpb
+  - matchbox/server
   - matchbox/server/serverpb
+  - matchbox/storage
   - matchbox/storage/storagepb
+  - matchbox/storage/testfakes
+  - matchbox/tlsutil
+- name: github.com/davecgh/go-spew
+  version: 5215b55f46b2b919f50a1df0eaa5886afe4e3b3d
+  subpackages:
+  - spew
 - name: github.com/go-ini/ini
   version: 6e4869b434bd001f6983749881c7ead3545887d8
 - name: github.com/golang/protobuf
@@ -54,19 +62,19 @@ imports:
 - name: github.com/hashicorp/errwrap
   version: 7554cd9344cec97297fa6649b055a8c98c2a1e55
 - name: github.com/hashicorp/go-getter
-  version: e48f67b534e614bf7fbd978fd0020f61a17b7527
+  version: 615ccd8621bdb3837e18be586ce15655ef52b185
   subpackages:
   - helper/url
 - name: github.com/hashicorp/go-multierror
   version: ed905158d87462226a13fe39ddf685ea65f1c11f
 - name: github.com/hashicorp/go-plugin
-  version: 1ffca25a1118915effa6d7585a0550fec8cb44fd
+  version: f72692aebca2008343a9deb06ddb4b17f7051c15
 - name: github.com/hashicorp/go-uuid
   version: 64130c7a86d732268a38cb04cfbaf0cc987fda98
 - name: github.com/hashicorp/go-version
   version: 03c5bf6be031b6dd45afec16b1cf94fc8938bc77
 - name: github.com/hashicorp/hcl
-  version: 7fa7fff964d035e8a162cce3a164b3ad02ad651b
+  version: 630949a3c5fa3c613328e1b8256052cbc2327c9b
   subpackages:
   - hcl/ast
   - hcl/parser
@@ -82,6 +90,8 @@ imports:
   - ast
   - parser
   - scanner
+- name: github.com/hashicorp/logutils
+  version: 0dc08b1671f34c4250ce212759ebd880f743d883
 - name: github.com/hashicorp/terraform
   version: 277bbf65d1141207dbb30485bf124b1dba08f80f
   subpackages:
@@ -89,9 +99,12 @@ imports:
   - config/module
   - dag
   - flatmap
+  - helper/config
   - helper/experiment
   - helper/hashcode
   - helper/hilmapstructure
+  - helper/logging
+  - helper/resource
   - helper/schema
   - helper/shadow
   - plugin
@@ -105,13 +118,17 @@ imports:
 - name: github.com/mitchellh/go-homedir
   version: b8bc1bf767474819792c23f32d8286a45736f1c6
 - name: github.com/mitchellh/hashstructure
-  version: ab25296c0f51f1022f01cd99dfb45f1775de8799
+  version: 9204ce590301a868e3e86938bc12eadd416b211e
 - name: github.com/mitchellh/mapstructure
-  version: cc8532a8e9a55ea36402aa21efdf403a60d34096
+  version: 281073eb9eb092240d33ef253c404f1cca550309
 - name: github.com/mitchellh/reflectwalk
-  version: 417edcfd99a4d472c262e58f22b4bfe97580f03e
+  version: 8d802ff4ae93611b807597f639c19f76074df5c6
 - name: github.com/satori/go.uuid
   version: 5bf94b69c6b68ee1b541973bb8e1144db23a194b
+- name: github.com/Sirupsen/logrus
+  version: 4b6ea7319e214d98c938f12692336f7ca9348d6b
+  subpackages:
+  - hooks/test
 - name: golang.org/x/net
   version: fb93926129b8ec0056f2f458b1f519654814edf0
   subpackages:
@@ -120,6 +137,10 @@ imports:
   - http2/hpack
   - internal/timeseries
   - trace
+- name: golang.org/x/sys
+  version: d4feaf1a7e61e1d9e79e6c4e76c6349e9cab0a03
+  subpackages:
+  - unix
 - name: google.golang.org/grpc
   version: 8050b9cbc271307e5a716a9d782803d09b0d6f2d
   subpackages:

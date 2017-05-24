@@ -61,14 +61,7 @@ func Host(base *net.IPNet, num int) (net.IP, error) {
 	hostLen := addrLen - parentLen
 
 	maxHostNum := uint64(1<<uint64(hostLen)) - 1
-
-	numUint64 := uint64(num)
-	if num < 0 {
-		numUint64 = uint64(-num) - 1
-		num = int(maxHostNum - numUint64)
-	}
-
-	if numUint64 > maxHostNum {
+	if uint64(num) > maxHostNum {
 		return nil, fmt.Errorf("prefix of %d does not accommodate a host numbered %d", parentLen, num)
 	}
 

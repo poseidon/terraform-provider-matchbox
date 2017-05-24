@@ -37,6 +37,7 @@ func NewMatchboxClient(config *Config) (*matchbox.Client, error) {
 }
 
 // tlsConfig returns a matchbox client TLS.Config.
+// TODO: Update matchbox TLSInfo.ClientConfig to replace this.
 func tlsConfig(ca, clientCert, clientKey []byte) (*tls.Config, error) {
 	// certificate authority for verifying the server
 	pool := x509.NewCertPool()
