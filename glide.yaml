@@ -6,9 +6,11 @@ import:
   - matchbox/client
   - matchbox/server/serverpb
   - matchbox/storage/storagepb
+  - matchbox/tlsutil
 - package: github.com/hashicorp/terraform
   version: v0.9.4
   subpackages:
   - helper/schema
   - plugin
   - terraform
+  - helper/resource
