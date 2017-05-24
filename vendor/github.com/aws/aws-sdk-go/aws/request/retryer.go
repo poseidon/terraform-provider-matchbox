@@ -38,6 +38,7 @@ var throttleCodes = map[string]struct{}{
 	"ThrottlingException":                    {},
 	"RequestLimitExceeded":                   {},
 	"RequestThrottled":                       {},
+	"LimitExceededException":                 {}, // Deleting 10+ DynamoDb tables at once
 	"TooManyRequestsException":               {}, // Lambda functions
 	"PriorRequestNotComplete":                {}, // Route53
 }
@@ -69,35 +70,13 @@ func isCodeExpiredCreds(code string) bool {
 	return ok
 }
 
-var validParentCodes = map[string]struct{}{
-	ErrCodeSerialization: struct{}{},
-	ErrCodeRead:          struct{}{},
-}
-
-type temporaryError interface {
-	Temporary() bool
-}
-
-func isNestedErrorRetryable(parentErr awserr.Error) bool {
-	if parentErr == nil {
-		return false
-	}
-
-	if _, ok := validParentCodes[parentErr.Code()]; !ok {
-		return false
-	}
-
-	err := parentErr.OrigErr()
+func isSerializationErrorRetryable(err error) bool {
 	if err == nil {
 		return false
 	}
 
 	if aerr, ok := err.(awserr.Error); ok {
 		return isCodeRetryable(aerr.Code())
-	}
-
-	if t, ok := err.(temporaryError); ok {
-		return t.Temporary()
 	}
 
 	return isErrConnectionReset(err)
@@ -107,8 +86,10 @@ func isNestedErrorRetryable(parentErr awserr.Error) bool {
 // Returns false if error is nil.
 func IsErrorRetryable(err error) bool {
 	if err != nil {
-		if aerr, ok := err.(awserr.Error); ok {
-			return isCodeRetryable(aerr.Code()) || isNestedErrorRetryable(aerr)
+		if aerr, ok := err.(awserr.Error); ok && aerr.Code() != ErrCodeSerialization {
+			return isCodeRetryable(aerr.Code())
+		} else if ok {
+			return isSerializationErrorRetryable(aerr.OrigErr())
 		}
 	}
 	return false

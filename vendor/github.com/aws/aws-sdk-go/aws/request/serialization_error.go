@@ -1,4 +1,4 @@
-// +build !appengine,!plan9
+// +build !appengine
 
 package request
 
