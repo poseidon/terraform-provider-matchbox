@@ -33,6 +33,11 @@ func resourceProfile() *schema.Resource {
 				Optional: true,
 				ForceNew: true,
 			},
+			"cloud_id": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"kernel": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -70,6 +75,7 @@ func resourceProfileCreate(d *schema.ResourceData, meta interface{}) error {
 
 	// Profile
 	name := d.Get("name").(string)
+	cloudID := d.Get("cloud_id").(string)
 	clcName, clc := containerLinuxConfig(d)
 
 	var initrds []string
@@ -82,6 +88,7 @@ func resourceProfileCreate(d *schema.ResourceData, meta interface{}) error {
 	}
 	profile := &storagepb.Profile{
 		Id:         name,
+		CloudId:    cloudID,
 		IgnitionId: clcName,
 		Boot: &storagepb.NetBoot{
 			Kernel: d.Get("kernel").(string),
