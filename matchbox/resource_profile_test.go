@@ -169,25 +169,3 @@ func TestResourceProfile_withIgnitionAndContainerLinuxConfig(t *testing.T) {
 	})
 
 }
-
-func TestResourceProfile_withoutPayload(t *testing.T) {
-	srv := NewFixtureServer(clientTLSInfo, serverTLSInfo, testfakes.NewFixedStore())
-	go srv.Start()
-	defer srv.Stop()
-
-	hcl := `
-		resource "matchbox_profile" "default" {
-			name   = "default"
-		}
-	`
-
-	resource.Test(t, resource.TestCase{
-		IsUnitTest: true,
-		Providers:  providers,
-		Steps: []resource.TestStep{{
-			Config:      srv.AddProviderConfig(hcl),
-			ExpectError: regexp.MustCompile("are required"),
-		}},
-	})
-
-}

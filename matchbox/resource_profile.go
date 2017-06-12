@@ -141,10 +141,6 @@ func validateResourceProfile(d *schema.ResourceData) error {
 	if hasCLC && hasRAW {
 		return errors.New("container_linux_config and raw_ignition are mutually exclusive")
 	}
-
-	if !hasCLC && !hasRAW {
-		return errors.New("container_linux_config or raw_ignition are required")
-	}
 	return nil
 }
 
