@@ -1,14 +1,12 @@
 # Matchbox Terraform Provider
 
-The Matchbox provider is used to interact with the [matchbox](https://github.com/coreos/matchbox) API. Matchbox matches bare-metal machines by labels (e.g. MAC address) to Profiles with iPXE configs and Container Linux configs to provision clusters.
-
-## Status
-
-This project is alpha. Breaking changes may be made. Matchbox v0.6.0 is required.
+The Matchbox provider is used to interact with the [matchbox](https://github.com/coreos/matchbox) API. Matchbox matches bare-metal machines by labels (e.g. MAC address) to Profiles with iPXE configs, Container Linux configs, or generic free-form configs in order to provision clusters.
 
 ## Usage
 
-Install [Terraform](https://www.terraform.io/downloads.html) v0.9.2. Add the `terraform-provider-matchbox` plugin binary somewhere on your filesystem.
+A Matchbox v0.6+ [installation](https://coreos.com/matchbox/docs/latest/deployment.html) is required. Matchbox v0.7+ is required to use the `generic_config` field.
+
+Install [Terraform](https://www.terraform.io/downloads.html) v0.9+ Add the `terraform-provider-matchbox` plugin binary somewhere on your filesystem.
 
 ```sh
 # dev
@@ -30,27 +28,28 @@ On-premise, [setup](https://coreos.com/matchbox/docs/latest/network-setup.html) 
 ```tf
 // Configure the matchbox provider
 provider "matchbox" {
-  endpoint = "matchbox.example.com:8081"
+  endpoint = "${var.matchbox_rpc_endpoint}"
   client_cert = "${file("~/.matchbox/client.crt")}"
   client_key = "${file("~/.matchbox/client.key")}"
   ca         = "${file("~/.matchbox/ca.crt")}"
 }
 
-// Create a CoreOS-install profile
-resource "matchbox_profile" "coreos-install" {
-  name = "coreos-install"
-  kernel = "/assets/coreos/1235.9.0/coreos_production_pxe.vmlinuz"
+// Create a Container Linux install profile
+resource "matchbox_profile" "container-linux-install" {
+  name = "container-linux-install"
+  kernel = "/assets/coreos/${var.container_linux_version}/coreos_production_pxe.vmlinuz"
   initrd = [
-    "/assets/coreos/1235.9.0/coreos_production_pxe_image.cpio.gz"
+    "/assets/coreos/${var.container_linux_version}/coreos_production_pxe_image.cpio.gz"
   ]
   args = [
-    "coreos.config.url=http://matchbox.example.com:8080/ignition?uuid=$${uuid}&mac=$${mac:hexhyp}",
+    "coreos.config.url=http://${var.matchbox_http_endpoint}/ignition?uuid=$${uuid}&mac=$${mac:hexhyp}",
     "coreos.first_boot=yes",
     "console=tty0",
     "console=ttyS0",
     "coreos.autologin"
   ]
   container_linux_config = "${file("./cl/coreos-install.yaml.tmpl")}"
+  generic_config = "${file("./example.ks")}"
 }
 
 // Match a bare-metal machine
@@ -61,10 +60,7 @@ resource "matchbox_group" "node1" {
     mac = "52:54:00:a1:9c:ae"
   }
   metadata {
-    coreos_channel = "stable"
-    coreos_version = "1235.9.0"
-    ignition_endpoint = "http://matchbox.example.com:8080/ignition"
-    baseurl = "http://matchbox.example.com:8080/assets/coreos"
+    custom_variable = "machine_specific_value_here"
     ssh_authorized_key = "${var.ssh_authorized_key}"
   }
 }
@@ -83,6 +79,6 @@ To develop the plguin locally, compile and install the executable with Go 1.8.
 
 ### Vendor
 
-Add or update dependencies in glide.yaml and vendor. The glide and glide-vc tools vendor and prune dependencies.
+Add or update dependencies in `glide.yaml` and vendor. The [glide](https://github.com/Masterminds/glide) and [glide-vc](https://github.com/sgotti/glide-vc) tools vendor and prune dependencies.
 
     make vendor
