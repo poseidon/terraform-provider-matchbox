@@ -29,6 +29,7 @@ func TestResourceProfile(t *testing.T) {
 			]
 
 			container_linux_config = "baz"
+			generic_config = "experimental"
 		}
 	`
 
@@ -61,13 +62,20 @@ func TestResourceProfile(t *testing.T) {
 			return fmt.Errorf("args, found %v", args)
 		}
 
-		ignition, err := srv.Store.IgnitionGet("default.yaml.tmpl")
+		clc, err := srv.Store.IgnitionGet("default.yaml.tmpl")
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to get Container Linux config: %v", err)
+		}
+		if clc != "baz" {
+			return fmt.Errorf("want Container Linux config 'baz', got %q", clc)
 		}
 
-		if ignition != "baz" {
-			return fmt.Errorf("container_linux_config, found %q", ignition)
+		genericConfig, err := srv.Store.GenericGet("default")
+		if err != nil {
+			return fmt.Errorf("failed to get generic config: %v", err)
+		}
+		if genericConfig != "experimental" {
+			return fmt.Errorf("want generic config 'experimental', got %s", genericConfig)
 		}
 
 		return nil
@@ -118,11 +126,10 @@ func TestResourceProfile_withIgnition(t *testing.T) {
 
 		ignition, err := srv.Store.IgnitionGet("default.ign")
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to get raw Ignition config: %v", err)
 		}
-
 		if ignition != "baz" {
-			return fmt.Errorf("raw_ignition, found %q", ignition)
+			return fmt.Errorf("want raw Ignition 'baz', got %q", ignition)
 		}
 
 		return nil
