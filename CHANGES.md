@@ -4,8 +4,10 @@ Notable changes between releases.
 
 ## Latest
 
-* Add Profile generic_config support
-* Add Profile raw_ignition support
+## v0.2.0 (2017-06-13)
+
+* Add Profile `generic_config` field to write generic/experimental config templates to Matchbox
+* Add Profile `raw_ignition` field to write raw Ignition to Matchbox. Note that providing a `container_linux_config` is preferred.
 
 ## v0.1.1 (2017-05-15)
 
