@@ -23,16 +23,6 @@ func resourceProfile() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
-			"raw_ignition": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				ForceNew: true,
-			},
-			"container_linux_config": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				ForceNew: true,
-			},
 			"kernel": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -54,6 +44,22 @@ func resourceProfile() *schema.Resource {
 				Optional: true,
 				ForceNew: true,
 			},
+			// recommended
+			"container_linux_config": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
+			"raw_ignition": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
+			"generic_config": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 		},
 	}
 }
@@ -70,8 +76,7 @@ func resourceProfileCreate(d *schema.ResourceData, meta interface{}) error {
 
 	// Profile
 	name := d.Get("name").(string)
-	clcName, clc := containerLinuxConfig(d)
-
+	// NetBoot
 	var initrds []string
 	for _, initrd := range d.Get("initrd").([]interface{}) {
 		initrds = append(initrds, initrd.(string))
@@ -80,15 +85,23 @@ func resourceProfileCreate(d *schema.ResourceData, meta interface{}) error {
 	for _, arg := range d.Get("args").([]interface{}) {
 		args = append(args, arg.(string))
 	}
+	// Container Linux config / Ignition config
+	clcName, _ := containerLinuxConfig(d)
+	// Generic (experimental) config
+	genericName, _ := genericConfig(d)
+
 	profile := &storagepb.Profile{
-		Id:         name,
-		IgnitionId: clcName,
+		Id: name,
 		Boot: &storagepb.NetBoot{
 			Kernel: d.Get("kernel").(string),
 			Initrd: initrds,
 			Args:   args,
 		},
+		IgnitionId: clcName,
+		GenericId:  genericName,
 	}
+
+	// Profile
 	_, err := client.Profiles.ProfilePut(ctx, &serverpb.ProfilePutRequest{
 		Profile: profile,
 	})
@@ -97,12 +110,25 @@ func resourceProfileCreate(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	// Container Linux Config
-	_, err = client.Ignition.IgnitionPut(ctx, &serverpb.IgnitionPutRequest{
-		Name:   clcName,
-		Config: []byte(clc),
-	})
-	if err != nil {
-		return err
+	if name, content := containerLinuxConfig(d); content != "" {
+		_, err = client.Ignition.IgnitionPut(ctx, &serverpb.IgnitionPutRequest{
+			Name:   name,
+			Config: []byte(content),
+		})
+		if err != nil {
+			return err
+		}
+	}
+
+	// Generic Config
+	if name, content := genericConfig(d); content != "" {
+		_, err = client.Generic.GenericPut(ctx, &serverpb.GenericPutRequest{
+			Name:   name,
+			Config: []byte(content),
+		})
+		if err != nil {
+			return err
+		}
 	}
 
 	d.SetId(profile.GetId())
@@ -115,10 +141,6 @@ func validateResourceProfile(d *schema.ResourceData) error {
 	if hasCLC && hasRAW {
 		return errors.New("container_linux_config and raw_ignition are mutually exclusive")
 	}
-
-	if !hasCLC && !hasRAW {
-		return errors.New("container_linux_config or raw_ignition are required")
-	}
 	return nil
 }
 
@@ -126,23 +148,39 @@ func resourceProfileRead(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*matchbox.Client)
 	ctx := context.TODO()
 
+	// Profile
 	name := d.Get("name").(string)
 	_, err := client.Profiles.ProfileGet(ctx, &serverpb.ProfileGetRequest{
 		Id: name,
 	})
 	if err != nil {
-		// resource doesn't exist or is corrupted
+		// resource doesn't exist or is corrupted and needs creating
 		d.SetId("")
 		return nil
 	}
 
-	_, err = client.Ignition.IgnitionGet(ctx, &serverpb.IgnitionGetRequest{
-		Name: containerLinuxConfigName(d),
-	})
-	if err != nil {
-		// resource doesn't exist or is corrupted
-		d.SetId("")
-		return nil
+	// Container Linux Config
+	if name, content := containerLinuxConfig(d); content != "" {
+		_, err = client.Ignition.IgnitionGet(ctx, &serverpb.IgnitionGetRequest{
+			Name: name,
+		})
+		if err != nil {
+			// resource doesn't exist or is corrupted and needs creating
+			d.SetId("")
+			return nil
+		}
+	}
+
+	// Generic Config
+	if name, content := genericConfig(d); content != "" {
+		_, err = client.Generic.GenericGet(ctx, &serverpb.GenericGetRequest{
+			Name: name,
+		})
+		if err != nil {
+			// resource doesn't exist or is corrupted and needs creating
+			d.SetId("")
+			return nil
+		}
 	}
 
 	return nil
@@ -165,11 +203,23 @@ func resourceProfileDelete(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	// Container Linux Config
-	_, err = client.Ignition.IgnitionDelete(ctx, &serverpb.IgnitionDeleteRequest{
-		Name: containerLinuxConfigName(d),
-	})
-	if err != nil {
-		return err
+	if name, content := containerLinuxConfig(d); content != "" {
+		_, err = client.Ignition.IgnitionDelete(ctx, &serverpb.IgnitionDeleteRequest{
+			Name: name,
+		})
+		if err != nil {
+			return err
+		}
+	}
+
+	// Generic Config
+	if name, content := genericConfig(d); content != "" {
+		_, err = client.Generic.GenericDelete(ctx, &serverpb.GenericDeleteRequest{
+			Name: name,
+		})
+		if err != nil {
+			return err
+		}
 	}
 
 	// resource can be destroyed in state
@@ -177,12 +227,8 @@ func resourceProfileDelete(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
-func containerLinuxConfigName(d *schema.ResourceData) string {
-	filename, _ := containerLinuxConfig(d)
-	return filename
-}
-
 func containerLinuxConfig(d *schema.ResourceData) (filename, config string) {
+	// use profile name to generate Container Linux and Ignition filenames
 	name := d.Get("name").(string)
 
 	if content, ok := d.GetOk("container_linux_config"); ok {
@@ -191,6 +237,17 @@ func containerLinuxConfig(d *schema.ResourceData) (filename, config string) {
 
 	if content, ok := d.GetOk("raw_ignition"); ok {
 		return fmt.Sprintf("%s.ign", name), content.(string)
+	}
+
+	return
+}
+
+func genericConfig(d *schema.ResourceData) (filename, config string) {
+	// use profile name to generate generic config filename
+	name := d.Get("name").(string)
+
+	if content, ok := d.GetOk("generic_config"); ok {
+		return name, content.(string)
 	}
 
 	return
