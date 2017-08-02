@@ -2,3 +2,4 @@
 assets
 .terraform
 _output/
+bin/

@@ -1,11 +1,20 @@
+export CGO_ENABLED:=0
+
 VERSION=$(shell ./scripts/git-version)
+GOPATH_BIN:=$(shell echo ${GOPATH} | awk 'BEGIN { FS = ":" }; { print $1 }')/bin
 
 .PHONY: all
 all: build
 
 .PHONY: build
-build:
-	@go install -v github.com/coreos/terraform-provider-matchbox
+build: bin/terraform-provider-matchbox
+
+bin/%:
+	@go build -o bin/$* -v github.com/coreos/terraform-provider-matchbox
+
+.PHONY: install
+install: bin/terraform-provider-matchbox
+	@cp $< $(GOPATH_BIN)
 
 .PHONY: test
 test:
