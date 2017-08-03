@@ -4,6 +4,10 @@ Notable changes between releases.
 
 ## Latest
 
+## v0.2.1 (2017-08-02)
+
+* Statically link the `terraform-provider-matchbox` binaries
+
 ## v0.2.0 (2017-06-13)
 
 * Add Profile `generic_config` field to write generic/experimental config templates to Matchbox
