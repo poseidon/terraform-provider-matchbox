@@ -7,10 +7,8 @@ GOPATH_BIN:=$(shell echo ${GOPATH} | awk 'BEGIN { FS = ":" }; { print $1 }')/bin
 all: build
 
 .PHONY: build
-build: bin/terraform-provider-matchbox
-
-bin/%:
-	@go build -o bin/$* -v github.com/coreos/terraform-provider-matchbox
+build:
+	@go build -o bin/terraform-provider-matchbox -v github.com/coreos/terraform-provider-matchbox
 
 .PHONY: install
 install: bin/terraform-provider-matchbox
