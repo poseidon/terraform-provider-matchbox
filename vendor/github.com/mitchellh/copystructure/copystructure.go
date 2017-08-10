@@ -366,10 +366,7 @@ func (w *walker) Struct(s reflect.Value) error {
 			return err
 		}
 
-		// We need to put a pointer to the value on the value stack,
-		// so allocate a new pointer and set it.
-		v = reflect.New(s.Type())
-		reflect.Indirect(v).Set(reflect.ValueOf(dup))
+		v = reflect.ValueOf(dup)
 	} else {
 		// No copier, we copy ourselves and allow reflectwalk to guide
 		// us deeper into the structure for copying.

@@ -1,7 +1,7 @@
 package: github.com/coreos/terraform-provider-matchbox
 import:
 - package: github.com/coreos/matchbox
-  version: 1cfdce2970371877d98474959eaada7bdf525bf5
+  version: 7def0d7e86fb9480e41df89947c3b6fb794bb5f7
   subpackages:
   - matchbox/client
   - matchbox/server/serverpb

@@ -3,61 +3,54 @@ package ast
 import "fmt"
 
 func VariableListElementTypesAreHomogenous(variableName string, list []Variable) (Type, error) {
-	if len(list) == 0 {
-		return TypeInvalid, fmt.Errorf("list %q does not have any elements so cannot determine type.", variableName)
-	}
-
-	elemType := TypeUnknown
+	listTypes := make(map[Type]struct{})
 	for _, v := range list {
+		// Allow unknown
 		if v.Type == TypeUnknown {
 			continue
 		}
 
-		if elemType == TypeUnknown {
-			elemType = v.Type
+		if _, ok := listTypes[v.Type]; ok {
 			continue
 		}
-
-		if v.Type != elemType {
-			return TypeInvalid, fmt.Errorf(
-				"list %q does not have homogenous types. found %s and then %s",
-				variableName,
-				elemType, v.Type,
-			)
-		}
-
-		elemType = v.Type
+		listTypes[v.Type] = struct{}{}
 	}
 
-	return elemType, nil
+	if len(listTypes) != 1 && len(list) != 0 {
+		return TypeInvalid, fmt.Errorf("list %q does not have homogenous types. found %s", variableName, reportTypes(listTypes))
+	}
+
+	if len(list) > 0 {
+		return list[0].Type, nil
+	}
+
+	return TypeInvalid, fmt.Errorf("list %q does not have any elements so cannot determine type.", variableName)
 }
 
 func VariableMapValueTypesAreHomogenous(variableName string, vmap map[string]Variable) (Type, error) {
-	if len(vmap) == 0 {
-		return TypeInvalid, fmt.Errorf("map %q does not have any elements so cannot determine type.", variableName)
-	}
-
-	elemType := TypeUnknown
+	valueTypes := make(map[Type]struct{})
 	for _, v := range vmap {
+		// Allow unknown
 		if v.Type == TypeUnknown {
 			continue
 		}
 
-		if elemType == TypeUnknown {
-			elemType = v.Type
+		if _, ok := valueTypes[v.Type]; ok {
 			continue
 		}
 
-		if v.Type != elemType {
-			return TypeInvalid, fmt.Errorf(
-				"map %q does not have homogenous types. found %s and then %s",
-				variableName,
-				elemType, v.Type,
-			)
-		}
-
-		elemType = v.Type
+		valueTypes[v.Type] = struct{}{}
 	}
 
-	return elemType, nil
+	if len(valueTypes) != 1 && len(vmap) != 0 {
+		return TypeInvalid, fmt.Errorf("map %q does not have homogenous value types. found %s", variableName, reportTypes(valueTypes))
+	}
+
+	// For loop here is an easy way to get a single key, we return immediately.
+	for _, v := range vmap {
+		return v.Type, nil
+	}
+
+	// This means the map is empty
+	return TypeInvalid, fmt.Errorf("map %q does not have any elements so cannot determine type.", variableName)
 }

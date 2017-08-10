@@ -10,19 +10,17 @@ package defaults
 import (
 	"fmt"
 	"net/http"
-	"net/url"
 	"os"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/corehandlers"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/credentials/ec2rolecreds"
 	"github.com/aws/aws-sdk-go/aws/credentials/endpointcreds"
 	"github.com/aws/aws-sdk-go/aws/ec2metadata"
-	"github.com/aws/aws-sdk-go/aws/endpoints"
 	"github.com/aws/aws-sdk-go/aws/request"
+	"github.com/aws/aws-sdk-go/private/endpoints"
 )
 
 // A Defaults provides a collection of default values for SDK clients.
@@ -58,7 +56,7 @@ func Config() *aws.Config {
 		WithMaxRetries(aws.UseServiceDefaultRetries).
 		WithLogger(aws.NewDefaultLogger()).
 		WithLogLevel(aws.LogOff).
-		WithEndpointResolver(endpoints.DefaultResolver())
+		WithSleepDelay(time.Sleep)
 }
 
 // Handlers returns the default request handlers.
@@ -74,7 +72,6 @@ func Handlers() request.Handlers {
 	handlers.Build.PushBackNamed(corehandlers.SDKVersionUserAgentHandler)
 	handlers.Build.AfterEachFn = request.HandlerListStopOnError
 	handlers.Sign.PushBackNamed(corehandlers.BuildContentLengthHandler)
-	handlers.Send.PushBackNamed(corehandlers.ValidateReqSigHandler)
 	handlers.Send.PushBackNamed(corehandlers.SendHandler)
 	handlers.AfterRetry.PushBackNamed(corehandlers.AfterRetryHandler)
 	handlers.ValidateResponse.PushBackNamed(corehandlers.ValidateResponseHandler)
@@ -98,51 +95,23 @@ func CredChain(cfg *aws.Config, handlers request.Handlers) *credentials.Credenti
 	})
 }
 
-const (
-	httpProviderEnvVar     = "AWS_CONTAINER_CREDENTIALS_FULL_URI"
-	ecsCredsProviderEnvVar = "AWS_CONTAINER_CREDENTIALS_RELATIVE_URI"
-)
-
-// RemoteCredProvider returns a credentials provider for the default remote
+// RemoteCredProvider returns a credenitials provider for the default remote
 // endpoints such as EC2 or ECS Roles.
 func RemoteCredProvider(cfg aws.Config, handlers request.Handlers) credentials.Provider {
-	if u := os.Getenv(httpProviderEnvVar); len(u) > 0 {
-		return localHTTPCredProvider(cfg, handlers, u)
-	}
+	ecsCredURI := os.Getenv("AWS_CONTAINER_CREDENTIALS_RELATIVE_URI")
 
-	if uri := os.Getenv(ecsCredsProviderEnvVar); len(uri) > 0 {
-		u := fmt.Sprintf("http://169.254.170.2%s", uri)
-		return httpCredProvider(cfg, handlers, u)
+	if len(ecsCredURI) > 0 {
+		return ecsCredProvider(cfg, handlers, ecsCredURI)
 	}
 
 	return ec2RoleProvider(cfg, handlers)
 }
 
-func localHTTPCredProvider(cfg aws.Config, handlers request.Handlers, u string) credentials.Provider {
-	var errMsg string
+func ecsCredProvider(cfg aws.Config, handlers request.Handlers, uri string) credentials.Provider {
+	const host = `169.254.170.2`
 
-	parsed, err := url.Parse(u)
-	if err != nil {
-		errMsg = fmt.Sprintf("invalid URL, %v", err)
-	} else if host := aws.URLHostname(parsed); !(host == "localhost" || host == "127.0.0.1") {
-		errMsg = fmt.Sprintf("invalid host address, %q, only localhost and 127.0.0.1 are valid.", host)
-	}
-
-	if len(errMsg) > 0 {
-		if cfg.Logger != nil {
-			cfg.Logger.Log("Ignoring, HTTP credential provider", errMsg, err)
-		}
-		return credentials.ErrorProvider{
-			Err:          awserr.New("CredentialsEndpointError", errMsg, err),
-			ProviderName: endpointcreds.ProviderName,
-		}
-	}
-
-	return httpCredProvider(cfg, handlers, u)
-}
-
-func httpCredProvider(cfg aws.Config, handlers request.Handlers, u string) credentials.Provider {
-	return endpointcreds.NewProviderClient(cfg, handlers, u,
+	return endpointcreds.NewProviderClient(cfg, handlers,
+		fmt.Sprintf("http://%s%s", host, uri),
 		func(p *endpointcreds.Provider) {
 			p.ExpiryWindow = 5 * time.Minute
 		},
@@ -150,14 +119,11 @@ func httpCredProvider(cfg aws.Config, handlers request.Handlers, u string) crede
 }
 
 func ec2RoleProvider(cfg aws.Config, handlers request.Handlers) credentials.Provider {
-	resolver := cfg.EndpointResolver
-	if resolver == nil {
-		resolver = endpoints.DefaultResolver()
-	}
+	endpoint, signingRegion := endpoints.EndpointForRegion(ec2metadata.ServiceName,
+		aws.StringValue(cfg.Region), true, false)
 
-	e, _ := resolver.EndpointFor(endpoints.Ec2metadataServiceID, "")
 	return &ec2rolecreds.EC2RoleProvider{
-		Client:       ec2metadata.NewClient(cfg, handlers, e.URL, e.SigningRegion),
+		Client:       ec2metadata.NewClient(cfg, handlers, endpoint, signingRegion),
 		ExpiryWindow: 5 * time.Minute,
 	}
 }

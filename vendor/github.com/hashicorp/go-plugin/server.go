@@ -1,7 +1,6 @@
 package plugin
 
 import (
-	"crypto/tls"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -48,9 +47,6 @@ type ServeConfig struct {
 
 	// Plugins are the plugins that are served.
 	Plugins map[string]Plugin
-
-	// TLSProvider is a function that returns a configured tls.Config.
-	TLSProvider func() (*tls.Config, error)
 }
 
 // Serve serves the plugins given by ServeConfig.
@@ -99,15 +95,6 @@ func Serve(opts *ServeConfig) {
 	if err != nil {
 		log.Printf("[ERR] plugin: plugin init: %s", err)
 		return
-	}
-
-	if opts.TLSProvider != nil {
-		tlsConfig, err := opts.TLSProvider()
-		if err != nil {
-			log.Printf("[ERR] plugin: plugin tls init: %s", err)
-			return
-		}
-		listener = tls.NewListener(listener, tlsConfig)
 	}
 	defer listener.Close()
 
