@@ -55,7 +55,7 @@ resource "matchbox_profile" "container-linux-install" {
 // Match a bare-metal machine
 resource "matchbox_group" "node1" {
   name = "node1"
-  profile = "${matchbox_profile.coreos-install.name}"
+  profile = "${matchbox_profile.container-linux-install.name}"
   selector {
     mac = "52:54:00:a1:9c:ae"
   }
