@@ -27,6 +27,8 @@ On-premise, [setup](https://coreos.com/matchbox/docs/latest/network-setup.html) 
 
 ```tf
 // Configure the matchbox provider
+variable "matchbox_rpc_endpoint" {}
+
 provider "matchbox" {
   endpoint = "${var.matchbox_rpc_endpoint}"
   client_cert = "${file("~/.matchbox/client.crt")}"
