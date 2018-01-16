@@ -1,5 +1,5 @@
-hash: cb340fcc950aeae70d91f2a0b1302788f776ef68aabb92325a61d1bbab405aa7
-updated: 2017-08-09T16:45:10.350367065-07:00
+hash: 2e72ca7e75895f7281711eaf8056206fb55c36b1e70f1f1244a59b362973afca
+updated: 2018-01-16T10:41:13.391805016-08:00
 imports:
 - name: github.com/apparentlymart/go-cidr
   version: a3ebdb999b831ecb6ab8a226e31b07b2b9061c47
@@ -59,7 +59,6 @@ imports:
   version: 2bba0603135d7d7f5cb73b2125beeda19c09f4ef
   subpackages:
   - proto
-  - protoc-gen-go
 - name: github.com/hashicorp/errwrap
   version: 7554cd9344cec97297fa6649b055a8c98c2a1e55
 - name: github.com/hashicorp/go-getter
@@ -128,8 +127,6 @@ imports:
   version: 5bf94b69c6b68ee1b541973bb8e1144db23a194b
 - name: github.com/Sirupsen/logrus
   version: 4b6ea7319e214d98c938f12692336f7ca9348d6b
-  subpackages:
-  - hooks/test
 - name: golang.org/x/net
   version: fb93926129b8ec0056f2f458b1f519654814edf0
   subpackages:
