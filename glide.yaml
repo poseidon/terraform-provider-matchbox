@@ -8,9 +8,11 @@ import:
   - matchbox/storage/storagepb
   - matchbox/tlsutil
 - package: github.com/hashicorp/terraform
-  version: v0.9.4
+  version: v0.10.1
   subpackages:
   - helper/schema
   - plugin
   - terraform
   - helper/resource
+- package: github.com/hashicorp/go-plugin
+  version: 871e7582ebde6a93f3e03d8c6fa0d2eb2eb98d02
