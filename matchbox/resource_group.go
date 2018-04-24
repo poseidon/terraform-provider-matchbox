@@ -2,6 +2,7 @@ package matchbox
 
 import (
 	"context"
+	"encoding/json"
 
 	matchbox "github.com/coreos/matchbox/matchbox/client"
 	"github.com/coreos/matchbox/matchbox/server/serverpb"
@@ -38,6 +39,11 @@ func resourceGroup() *schema.Resource {
 				Elem:     schema.TypeString,
 				ForceNew: true,
 			},
+			"metadata_json": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 		},
 	}
 }
@@ -53,11 +59,23 @@ func resourceGroupCreate(d *schema.ResourceData, meta interface{}) error {
 		selectors[k] = v.(string)
 	}
 
+	metadata := map[string]interface{}{}
+	if j, ok := d.GetOk("metadata_json"); ok {
+		err := json.Unmarshal([]byte(j.(string)), &metadata)
+		if err != nil {
+			return err
+		}
+	}
+
+	for k, v := range d.Get("metadata").(map[string]interface{}) {
+		metadata[k] = v.(string)
+	}
+
 	richGroup := &storagepb.RichGroup{
 		Id:       name,
 		Profile:  d.Get("profile").(string),
 		Selector: selectors,
-		Metadata: d.Get("metadata").(map[string]interface{}),
+		Metadata: metadata,
 	}
 	group, err := richGroup.ToGroup()
 	if err != nil {
