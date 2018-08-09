@@ -49,7 +49,7 @@ func TestResourceProfile(t *testing.T) {
 
 		boot := profile.GetBoot()
 		if boot.GetKernel() != "foo" {
-			return fmt.Errorf("kernel, found %d", boot.GetKernel())
+			return fmt.Errorf("kernel, found %s", boot.GetKernel())
 		}
 
 		initrd := boot.GetInitrd()

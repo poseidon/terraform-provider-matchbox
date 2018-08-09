@@ -46,3 +46,12 @@ _output/darwin-amd64/terraform-provider-matchbox: GOARGS = GOOS=darwin GOARCH=am
 _output/windows-amd64/terraform-provider-matchbox: GOARGS = GOOS=windows GOARCH=amd64
 _output/%/terraform-provider-matchbox:
 	$(GOARGS) go build -o $@ github.com/coreos/terraform-provider-matchbox
+
+.PHONY: certificates
+certificates:
+	@openssl req -days 3650 -nodes -x509 -config matchbox/testdata/certs.ext -extensions v3_ca -newkey rsa:4096 -keyout matchbox/testdata/ca.key -out matchbox/testdata/ca.crt -subj "/CN=fake-ca"
+	@openssl req -nodes -newkey rsa:2048 -keyout matchbox/testdata/server.key -out matchbox/testdata/server.csr -subj "/CN=fake-server"
+	@openssl x509 -days 365 -sha256 -extfile matchbox/testdata/certs.ext -extensions v3_server -req -in matchbox/testdata/server.csr -CA matchbox/testdata/ca.crt -CAkey matchbox/testdata/ca.key -CAcreateserial -out matchbox/testdata/server.crt
+	@openssl req -nodes -newkey rsa:2048 -keyout matchbox/testdata/client.key -out matchbox/testdata/client.csr -subj "/CN=fake-client"
+	@openssl x509 -days 365 -sha256 -extfile matchbox/testdata/certs.ext -extensions v3_client -req -in matchbox/testdata/client.csr -CA matchbox/testdata/ca.crt -CAkey matchbox/testdata/ca.key -CAserial matchbox/testdata/ca.srl -out matchbox/testdata/client.crt
+	@rm matchbox/testdata/*.csr matchbox/testdata/ca.srl
