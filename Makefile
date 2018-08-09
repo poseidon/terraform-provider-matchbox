@@ -31,7 +31,8 @@ clean:
 release: \
 	clean \
 	_output/plugin-linux-amd64.tar.gz \
-	_output/plugin-darwin-amd64.tar.gz
+	_output/plugin-darwin-amd64.tar.gz \
+	_output/plugin-windows-amd64.tar.gz
 
 _output/plugin-%.tar.gz: NAME=terraform-provider-matchbox-$(VERSION)-$*
 _output/plugin-%.tar.gz: DEST=_output/$(NAME)
@@ -42,5 +43,6 @@ _output/plugin-%.tar.gz: _output/%/terraform-provider-matchbox
 
 _output/linux-amd64/terraform-provider-matchbox: GOARGS = GOOS=linux GOARCH=amd64
 _output/darwin-amd64/terraform-provider-matchbox: GOARGS = GOOS=darwin GOARCH=amd64
+_output/windows-amd64/terraform-provider-matchbox: GOARGS = GOOS=windows GOARCH=amd64
 _output/%/terraform-provider-matchbox:
 	$(GOARGS) go build -o $@ github.com/coreos/terraform-provider-matchbox
