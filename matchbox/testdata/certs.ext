@@ -1,0 +1,20 @@
+distinguished_name = req_distinguished_name
+[req_distinguished_name]
+[ v3_ca ]
+subjectKeyIdentifier=hash
+authorityKeyIdentifier=keyid,issuer
+basicConstraints=critical,CA:TRUE, pathlen:0
+keyUsage=critical, digitalSignature, keyCertSign, cRLSign
+[ v3_server ]
+basicConstraints=CA:FALSE
+subjectKeyIdentifier=hash
+authorityKeyIdentifier=keyid,issuer:always
+keyUsage=critical, digitalSignature, keyEncipherment
+extendedKeyUsage=serverAuth
+subjectAltName=DNS:matchbox.example.com,IP:127.0.0.1
+[ v3_client ]
+basicConstraints=CA:FALSE
+subjectKeyIdentifier=hash
+authorityKeyIdentifier=keyid
+keyUsage=critical, digitalSignature, nonRepudiation, keyEncipherment
+extendedKeyUsage=clientAuth

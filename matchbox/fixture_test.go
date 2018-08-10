@@ -66,7 +66,7 @@ func (s *FixtureServer) Start() {
 		panic(fmt.Errorf("Invalid TLS credentials: %v", err))
 	}
 
-	srv := server.NewServer(&server.Config{s.Store})
+	srv := server.NewServer(&server.Config{Store: s.Store})
 	s.Server = rpc.NewServer(srv, cfg)
 	s.Server.Serve(s.Listener)
 }
