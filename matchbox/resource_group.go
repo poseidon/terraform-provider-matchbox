@@ -43,7 +43,7 @@ func resourceGroup() *schema.Resource {
 }
 
 func resourceGroupCreate(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*matchbox.Client)
+	clients := meta.([]*matchbox.Client)
 	ctx := context.TODO()
 
 	name := d.Get("name").(string)
@@ -64,11 +64,13 @@ func resourceGroupCreate(d *schema.ResourceData, meta interface{}) error {
 		return err
 	}
 
-	_, err = client.Groups.GroupPut(ctx, &serverpb.GroupPutRequest{
-		Group: group,
-	})
-	if err != nil {
-		return err
+	for _, client := range clients {
+		_, err = client.Groups.GroupPut(ctx, &serverpb.GroupPutRequest{
+			Group: group,
+		})
+		if err != nil {
+			return err
+		}
 	}
 
 	d.SetId(group.GetId())
@@ -76,7 +78,7 @@ func resourceGroupCreate(d *schema.ResourceData, meta interface{}) error {
 }
 
 func resourceGroupRead(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*matchbox.Client)
+	client := meta.([]*matchbox.Client)[0]
 	ctx := context.TODO()
 
 	name := d.Get("name").(string)
@@ -92,15 +94,17 @@ func resourceGroupRead(d *schema.ResourceData, meta interface{}) error {
 }
 
 func resourceGroupDelete(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*matchbox.Client)
+	clients := meta.([]*matchbox.Client)
 	ctx := context.TODO()
 
 	name := d.Get("name").(string)
-	_, err := client.Groups.GroupDelete(ctx, &serverpb.GroupDeleteRequest{
-		Id: name,
-	})
-	if err != nil {
-		return err
+	for _, client := range clients {
+		_, err := client.Groups.GroupDelete(ctx, &serverpb.GroupDeleteRequest{
+			Id: name,
+		})
+		if err != nil {
+			return err
+		}
 	}
 	d.SetId("")
 	return nil

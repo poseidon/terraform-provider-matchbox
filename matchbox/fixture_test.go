@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net"
+	"strings"
 
 	"github.com/coreos/matchbox/matchbox/rpc"
 	"github.com/coreos/matchbox/matchbox/server"
@@ -29,9 +30,9 @@ var (
 )
 
 type FixtureServer struct {
-	Store    storage.Store
-	Server   *grpc.Server
-	Listener net.Listener
+	Store     storage.Store
+	Servers   []*grpc.Server
+	Listeners []net.Listener
 	// TLS server certificates (files) which will be used
 	ServerTLS *tlsutil.TLSInfo
 	// TLS client credentials which should be used
@@ -45,16 +46,23 @@ type TLSContents struct {
 	CA   []byte
 }
 
-func NewFixtureServer(clientTLS *TLSContents, serverTLS *tlsutil.TLSInfo, s storage.Store) *FixtureServer {
+func NewFixtureServer(clientTLS *TLSContents, serverTLS *tlsutil.TLSInfo, s storage.Store, replicas int) *FixtureServer {
+	listeners := []net.Listener{}
 	// Address close (i.e. release) is effectively asynchronous. Test server
 	// instances should reserve a random address upfront.
-	lis, err := net.Listen("tcp", "127.0.0.1:0")
-	if err != nil {
-		panic(fmt.Errorf("failed to start listening: %v", err))
+	for i := 0; i < replicas; i++ {
+		lis, err := net.Listen("tcp", "127.0.0.1:0")
+		if err != nil {
+			panic(fmt.Errorf("failed to start listening: %v", err))
+		}
+
+		listeners = append(listeners, lis)
 	}
+
 	return &FixtureServer{
 		Store:     s,
-		Listener:  lis,
+		Servers:   []*grpc.Server{},
+		Listeners: listeners,
 		ServerTLS: serverTLS,
 		ClientTLS: clientTLS,
 	}
@@ -67,20 +75,26 @@ func (s *FixtureServer) Start() {
 	}
 
 	srv := server.NewServer(&server.Config{Store: s.Store})
-	s.Server = rpc.NewServer(srv, cfg)
-	s.Server.Serve(s.Listener)
+	for _, listener := range s.Listeners {
+		server := rpc.NewServer(srv, cfg)
+		s.Servers = append(s.Servers, server)
+		go server.Serve(listener)
+	}
 }
 
 func (s *FixtureServer) Stop() {
-	if s.Server != nil {
-		s.Server.Stop()
+	if len(s.Servers) > 0 {
+		for _, server := range s.Servers {
+			server.Stop()
+		}
+		s.Servers = []*grpc.Server{}
 	}
 }
 
 func (s *FixtureServer) AddProviderConfig(hcl string) string {
 	provider := `
 		provider "matchbox" {
-			endpoint = "%s"
+			%s
 			client_cert = <<CERT
 %s
 CERT
@@ -94,8 +108,19 @@ CA
 
 		%s
 		`
+	endpoints := ""
+	if len(s.Listeners) == 1 {
+		endpoints = fmt.Sprintf(`endpoint = "%s"`, s.Listeners[0].Addr().String())
+	} else {
+		addresses := ""
+		for _, listener := range s.Listeners {
+			addresses += fmt.Sprintf(`"%s",`, listener.Addr().String())
+		}
+		addresses = strings.Trim(addresses, ",")
+		endpoints = fmt.Sprintf(`endpoints = [%s]`, addresses)
+	}
 	return fmt.Sprintf(provider,
-		s.Listener.Addr().String(),
+		endpoints,
 		s.ClientTLS.Cert,
 		s.ClientTLS.Key,
 		s.ClientTLS.CA,

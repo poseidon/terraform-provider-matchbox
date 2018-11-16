@@ -10,7 +10,7 @@ import (
 )
 
 func TestResourceGroup(t *testing.T) {
-	srv := NewFixtureServer(clientTLSInfo, serverTLSInfo, testfakes.NewFixedStore())
+	srv := NewFixtureServer(clientTLSInfo, serverTLSInfo, testfakes.NewFixedStore(), matchboxEndpoints)
 	go srv.Start()
 	defer srv.Stop()
 
@@ -63,4 +63,10 @@ func TestResourceGroup(t *testing.T) {
 		}},
 	})
 
+}
+
+func TestResourceGroup_withMultipleEndpoints(t *testing.T) {
+	matchboxEndpoints = 3
+	TestResourceGroup(t)
+	matchboxEndpoints = 1
 }

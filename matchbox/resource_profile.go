@@ -67,7 +67,7 @@ func resourceProfile() *schema.Resource {
 // resourceProfileCreate creates a Profile and its associated configs. Partial
 // creates do not modify state and can be retried safely.
 func resourceProfileCreate(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*matchbox.Client)
+	clients := meta.([]*matchbox.Client)
 	ctx := context.TODO()
 
 	if err := validateResourceProfile(d); err != nil {
@@ -101,38 +101,40 @@ func resourceProfileCreate(d *schema.ResourceData, meta interface{}) error {
 		GenericId:  genericName,
 	}
 
-	// Profile
-	_, err := client.Profiles.ProfilePut(ctx, &serverpb.ProfilePutRequest{
-		Profile: profile,
-	})
-	if err != nil {
-		return err
-	}
-
-	// Container Linux Config
-	if name, content := containerLinuxConfig(d); content != "" {
-		_, err = client.Ignition.IgnitionPut(ctx, &serverpb.IgnitionPutRequest{
-			Name:   name,
-			Config: []byte(content),
+	for _, client := range clients {
+		// Profile
+		_, err := client.Profiles.ProfilePut(ctx, &serverpb.ProfilePutRequest{
+			Profile: profile,
 		})
 		if err != nil {
 			return err
 		}
-	}
 
-	// Generic Config
-	if name, content := genericConfig(d); content != "" {
-		_, err = client.Generic.GenericPut(ctx, &serverpb.GenericPutRequest{
-			Name:   name,
-			Config: []byte(content),
-		})
-		if err != nil {
-			return err
+		// Container Linux Config
+		if name, content := containerLinuxConfig(d); content != "" {
+			_, err = client.Ignition.IgnitionPut(ctx, &serverpb.IgnitionPutRequest{
+				Name:   name,
+				Config: []byte(content),
+			})
+			if err != nil {
+				return err
+			}
+		}
+
+		// Generic Config
+		if name, content := genericConfig(d); content != "" {
+			_, err = client.Generic.GenericPut(ctx, &serverpb.GenericPutRequest{
+				Name:   name,
+				Config: []byte(content),
+			})
+			if err != nil {
+				return err
+			}
 		}
 	}
 
 	d.SetId(profile.GetId())
-	return err
+	return nil
 }
 
 func validateResourceProfile(d *schema.ResourceData) error {
@@ -145,7 +147,7 @@ func validateResourceProfile(d *schema.ResourceData) error {
 }
 
 func resourceProfileRead(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*matchbox.Client)
+	client := meta.([]*matchbox.Client)[0]
 	ctx := context.TODO()
 
 	// Profile
@@ -190,35 +192,37 @@ func resourceProfileRead(d *schema.ResourceData, meta interface{}) error {
 // deletes leave state unchanged and can be retried (deleting resources which
 // no longer exist is a no-op).
 func resourceProfileDelete(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*matchbox.Client)
+	clients := meta.([]*matchbox.Client)
 	ctx := context.TODO()
 
-	// Profile
-	name := d.Get("name").(string)
-	_, err := client.Profiles.ProfileDelete(ctx, &serverpb.ProfileDeleteRequest{
-		Id: name,
-	})
-	if err != nil {
-		return err
-	}
-
-	// Container Linux Config
-	if name, content := containerLinuxConfig(d); content != "" {
-		_, err = client.Ignition.IgnitionDelete(ctx, &serverpb.IgnitionDeleteRequest{
-			Name: name,
+	for _, client := range clients {
+		// Profile
+		name := d.Get("name").(string)
+		_, err := client.Profiles.ProfileDelete(ctx, &serverpb.ProfileDeleteRequest{
+			Id: name,
 		})
 		if err != nil {
 			return err
 		}
-	}
 
-	// Generic Config
-	if name, content := genericConfig(d); content != "" {
-		_, err = client.Generic.GenericDelete(ctx, &serverpb.GenericDeleteRequest{
-			Name: name,
-		})
-		if err != nil {
-			return err
+		// Container Linux Config
+		if name, content := containerLinuxConfig(d); content != "" {
+			_, err = client.Ignition.IgnitionDelete(ctx, &serverpb.IgnitionDeleteRequest{
+				Name: name,
+			})
+			if err != nil {
+				return err
+			}
+		}
+
+		// Generic Config
+		if name, content := genericConfig(d); content != "" {
+			_, err = client.Generic.GenericDelete(ctx, &serverpb.GenericDeleteRequest{
+				Name: name,
+			})
+			if err != nil {
+				return err
+			}
 		}
 	}
 

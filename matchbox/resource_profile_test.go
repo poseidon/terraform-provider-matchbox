@@ -11,8 +11,8 @@ import (
 )
 
 func TestResourceProfile(t *testing.T) {
-	srv := NewFixtureServer(clientTLSInfo, serverTLSInfo, testfakes.NewFixedStore())
-	go srv.Start()
+	srv := NewFixtureServer(clientTLSInfo, serverTLSInfo, testfakes.NewFixedStore(), matchboxEndpoints)
+	srv.Start()
 	defer srv.Stop()
 
 	hcl := `
@@ -92,9 +92,15 @@ func TestResourceProfile(t *testing.T) {
 
 }
 
+func TestResourceProfile_withMultipleEndpoints(t *testing.T) {
+	matchboxEndpoints = 3
+	TestResourceProfile(t)
+	matchboxEndpoints = 1
+}
+
 func TestResourceProfile_withIgnition(t *testing.T) {
-	srv := NewFixtureServer(clientTLSInfo, serverTLSInfo, testfakes.NewFixedStore())
-	go srv.Start()
+	srv := NewFixtureServer(clientTLSInfo, serverTLSInfo, testfakes.NewFixedStore(), matchboxEndpoints)
+	srv.Start()
 	defer srv.Stop()
 
 	hcl := `
@@ -146,9 +152,15 @@ func TestResourceProfile_withIgnition(t *testing.T) {
 
 }
 
+func TestResourceProfile_withIgnition_withMultipleEndpoints(t *testing.T) {
+	matchboxEndpoints = 3
+	TestResourceProfile_withIgnition(t)
+	matchboxEndpoints = 1
+}
+
 func TestResourceProfile_withIgnitionAndContainerLinuxConfig(t *testing.T) {
-	srv := NewFixtureServer(clientTLSInfo, serverTLSInfo, testfakes.NewFixedStore())
-	go srv.Start()
+	srv := NewFixtureServer(clientTLSInfo, serverTLSInfo, testfakes.NewFixedStore(), matchboxEndpoints)
+	srv.Start()
 	defer srv.Stop()
 
 	hcl := `
@@ -168,4 +180,10 @@ func TestResourceProfile_withIgnitionAndContainerLinuxConfig(t *testing.T) {
 		}},
 	})
 
+}
+
+func TestResourceProfile_withIgnitionAndContainerLinuxConfig_withMultipleEndpoints(t *testing.T) {
+	matchboxEndpoints = 3
+	TestResourceProfile_withIgnitionAndContainerLinuxConfig(t)
+	matchboxEndpoints = 1
 }
