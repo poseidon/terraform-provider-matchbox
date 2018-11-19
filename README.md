@@ -72,7 +72,7 @@ See [examples](https://github.com/coreos/matchbox/tree/master/examples/terraform
 
 ### Binary
 
-To develop the plugin locally, compile and install the executable with Go 1.8.
+To develop the plugin locally, compile and install the executable with Go 1.9+.
 
     make build
     make test
