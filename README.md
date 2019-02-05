@@ -72,13 +72,18 @@ See [examples](https://github.com/coreos/matchbox/tree/master/examples/terraform
 
 ### Binary
 
-To develop the plugin locally, compile and install the executable with Go 1.9+.
+To develop the provider plugin locally, build an executable with Go 1.11+.
 
-    make build
-    make test
+```
+make
+```
 
 ### Vendor
 
-Add or update dependencies in `glide.yaml` and vendor. The [glide](https://github.com/Masterminds/glide) and [glide-vc](https://github.com/sgotti/glide-vc) tools vendor and prune dependencies.
+Add or update dependencies in `go.mod` and vendor.
 
-    make vendor
+```
+make update
+make vendor
+```
+

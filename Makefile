@@ -1,14 +1,16 @@
 export CGO_ENABLED:=0
+export GO111MODULE=on
+export GOFLAGS=-mod=vendor
 
 VERSION=$(shell ./scripts/git-version)
 GOPATH_BIN:=$(shell echo ${GOPATH} | awk 'BEGIN { FS = ":" }; { print $1 }')/bin
 
 .PHONY: all
-all: build
+all: bin/terraform-provider-matchbox
 
 .PHONY: build
-build:
-	@go build -o bin/terraform-provider-matchbox -v github.com/coreos/terraform-provider-matchbox
+bin/terraform-provider-matchbox:
+	@go build -o $@ -v github.com/coreos/terraform-provider-matchbox
 
 .PHONY: install
 install: bin/terraform-provider-matchbox
@@ -18,10 +20,14 @@ install: bin/terraform-provider-matchbox
 test:
 	@./scripts/test
 
+.PHONY: update
+update:
+	@GOFLAGS="" go get -u
+	@go mod tidy
+
 .PHONY: vendor
 vendor:
-	@glide update --strip-vendor
-	@glide-vc --use-lock-file --no-tests --only-code
+	@go mod vendor
 
 .PHONY: clean
 clean:
