@@ -2,11 +2,10 @@ export CGO_ENABLED:=0
 export GO111MODULE=on
 export GOFLAGS=-mod=vendor
 
-VERSION=$(shell ./scripts/git-version)
-GOPATH_BIN:=$(shell echo ${GOPATH} | awk 'BEGIN { FS = ":" }; { print $1 }')/bin
+VERSION=$(shell git describe --tags --match=v* --always --dirty)
 
 .PHONY: all
-all: bin/terraform-provider-matchbox
+all: build test vet lint fmt
 
 .PHONY: build
 bin/terraform-provider-matchbox:
@@ -18,7 +17,19 @@ install: bin/terraform-provider-matchbox
 
 .PHONY: test
 test:
-	@./scripts/test
+	@go test ./... -cover
+
+.PHONY: vet
+vet:
+	@go vet -all ./...
+
+.PHONY: lint
+lint:
+	@golint -set_exit_status `go list ./...`
+
+.PHONY: fmt
+fmt:
+	@test -z $$(go fmt ./...)
 
 .PHONY: update
 update:
