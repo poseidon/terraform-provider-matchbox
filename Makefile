@@ -11,10 +11,6 @@ all: build test vet lint fmt
 bin/terraform-provider-matchbox:
 	@go build -o $@ -v github.com/coreos/terraform-provider-matchbox
 
-.PHONY: install
-install: bin/terraform-provider-matchbox
-	@cp $< $(GOPATH_BIN)
-
 .PHONY: test
 test:
 	@go test ./... -cover

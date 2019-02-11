@@ -1,39 +1,59 @@
-# Matchbox Terraform Provider
+# terraform-provider-matchbox
 
-The Matchbox provider is used to interact with the [matchbox](https://github.com/coreos/matchbox) API. Matchbox matches bare-metal machines by labels (e.g. MAC address) to Profiles with iPXE configs, Container Linux configs, or generic free-form configs in order to provision clusters.
+`terraform-provider-matchbox` allows defining CoreOS [Matchbox](https://github.com/coreos/matchbox) Profiles and Groups in Terraform. Matchbox matches machines, by label (e.g. MAC address), to Profiles with iPXE configs, Container Linux configs, or generic free-form configs to provision clusters. Resources are created via the client certificate authenticated Matchbox API.
+
+## Requirements
+
+* Terraform v0.11+ [installed](https://www.terraform.io/downloads.html)
+* Matchbox v0.6+ [installed](https://coreos.com/matchbox/docs/latest/deployment.html) (v0.7+ to use the `generic_config` field)
+* Matchbox credentials `client.crt`, `client.key`, `ca.crt`
+
+## Install
+
+Add the `terraform-provider-matchbox` plugin binary for your system to the Terraform 3rd-party [plugin directory](https://www.terraform.io/docs/configuration/providers.html#third-party-plugins) `~/.terraform.d/plugins`.
+
+```sh
+VERSION=v0.2.3
+wget https://github.com/coreos/terraform-provider-matchbox/releases/download/$VERSION/terraform-provider-matchbox-$VERSION-linux-amd64.tar.gz
+tar xzf terraform-provider-matchbox-$VERSION-linux-amd64.tar.gz
+mv terraform-provider-matchbox-$VERSION-linux-amd64/terraform-provider-matchbox ~/.terraform.d/plugins/terraform-provider-matchbox_$VERSION
+```
+
+Terraform plugin binary names are versioned to allow for migrations of managed infrastructure.
+
+```
+$ tree ~/.terraform.d/
+/home/user/.terraform.d/
+└── plugins
+    ├── terraform-provider-matchbox_v0.2.2
+    └── terraform-provider-matchbox_v0.2.3
+```
 
 ## Usage
 
-A Matchbox v0.6+ [installation](https://coreos.com/matchbox/docs/latest/deployment.html) is required. Matchbox v0.7+ is required to use the `generic_config` field.
+[Setup](https://coreos.com/matchbox/docs/latest/network-setup.html) a PXE network boot environment and [deploy](https://coreos.com/matchbox/docs/latest/deployment.html) a Matchbox instance. Be sure to enable the gRPC API and follow the instructions to generate TLS credentials.
 
-Install [Terraform](https://www.terraform.io/downloads.html) v0.9+ Add the `terraform-provider-matchbox` plugin binary somewhere on your filesystem.
-
-```sh
-# dev
-go get -u github.com/coreos/terraform-provider-matchbox
-```
-
-Register the plugin in `~/.terraformrc`.
-
-```hcl
-providers {
-  matchbox = "/path/to/terraform-provider-matchbox"
-}
-```
-
-On-premise, [setup](https://coreos.com/matchbox/docs/latest/network-setup.html) a PXE network boot environment. [Install matchbox](https://coreos.com/matchbox/docs/latest/deployment.html) on a provisioner node or Kubernetes cluster. Be sure to enable the gRPC API and follow the instructions to generate TLS credentials.
-
-### Examples
+Configure the Matchbox provider to use your Matchbox API endpoint and client certificate in a `providers.tf` file.
 
 ```tf
-// Configure the matchbox provider
 provider "matchbox" {
-  endpoint = "${var.matchbox_rpc_endpoint}"
+  version = "0.2.3"
+  endpoint    = "matchbox.example.com:8081"
   client_cert = "${file("~/.matchbox/client.crt")}"
-  client_key = "${file("~/.matchbox/client.key")}"
-  ca         = "${file("~/.matchbox/ca.crt")}"
+  client_key  = "${file("~/.matchbox/client.key")}"
+  ca          = "${file("~/.matchbox/ca.crt")}"
 }
+```
 
+Run `terraform init` to ensure plugin version requirements are met.
+
+```
+$ terraform init
+```
+
+Define a Matchbox Profile or Group resource in Terraform.
+
+```tf
 // Create a Container Linux install profile
 resource "matchbox_profile" "container-linux-install" {
   name = "container-linux-install"
