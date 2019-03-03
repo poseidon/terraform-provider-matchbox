@@ -6,7 +6,6 @@ go:
 install:
   - go get golang.org/x/lint/golint
 script:
-  - make build
-  - make test
+  - make
 notifications:
   email: change

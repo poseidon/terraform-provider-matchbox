@@ -8,6 +8,8 @@ VERSION=$(shell git describe --tags --match=v* --always --dirty)
 all: build test vet lint fmt
 
 .PHONY: build
+build: clean bin/terraform-provider-matchbox
+
 bin/terraform-provider-matchbox:
 	@go build -o $@ -v github.com/coreos/terraform-provider-matchbox
 
