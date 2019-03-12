@@ -8,6 +8,7 @@ import (
 
 	"github.com/hashicorp/go-multierror"
 	"github.com/hashicorp/terraform/config"
+	"github.com/hashicorp/terraform/configs/configschema"
 	"github.com/hashicorp/terraform/terraform"
 )
 
@@ -40,6 +41,10 @@ type Provisioner struct {
 	// It is given a context. See the Provisioner struct docs for more
 	// information.
 	ApplyFunc func(ctx context.Context) error
+
+	// ValidateFunc is a function for extended validation. This is optional
+	// and should be used when individual field validation is not enough.
+	ValidateFunc func(*terraform.ResourceConfig) ([]string, []error)
 
 	stopCtx       context.Context
 	stopCtxCancel context.CancelFunc
@@ -117,8 +122,9 @@ func (p *Provisioner) Stop() error {
 	return nil
 }
 
-func (p *Provisioner) Validate(c *terraform.ResourceConfig) ([]string, []error) {
-	return schemaMap(p.Schema).Validate(c)
+// GetConfigSchema implementation of terraform.ResourceProvisioner interface.
+func (p *Provisioner) GetConfigSchema() (*configschema.Block, error) {
+	return schemaMap(p.Schema).CoreConfigSchema(), nil
 }
 
 // Apply implementation of terraform.ResourceProvisioner interface.
@@ -146,7 +152,7 @@ func (p *Provisioner) Apply(
 		}
 
 		sm := schemaMap(p.ConnSchema)
-		diff, err := sm.Diff(nil, terraform.NewResourceConfig(c))
+		diff, err := sm.Diff(nil, terraform.NewResourceConfig(c), nil, nil, true)
 		if err != nil {
 			return err
 		}
@@ -160,7 +166,7 @@ func (p *Provisioner) Apply(
 		// Build the configuration data. Doing this requires making a "diff"
 		// even though that's never used. We use that just to get the correct types.
 		configMap := schemaMap(p.Schema)
-		diff, err := configMap.Diff(nil, c)
+		diff, err := configMap.Diff(nil, c, nil, nil, true)
 		if err != nil {
 			return err
 		}
@@ -177,4 +183,28 @@ func (p *Provisioner) Apply(
 	ctx = context.WithValue(ctx, ProvOutputKey, o)
 	ctx = context.WithValue(ctx, ProvRawStateKey, s)
 	return p.ApplyFunc(ctx)
+}
+
+// Validate implements the terraform.ResourceProvisioner interface.
+func (p *Provisioner) Validate(c *terraform.ResourceConfig) (ws []string, es []error) {
+	if err := p.InternalValidate(); err != nil {
+		return nil, []error{fmt.Errorf(
+			"Internal validation of the provisioner failed! This is always a bug\n"+
+				"with the provisioner itself, and not a user issue. Please report\n"+
+				"this bug:\n\n%s", err)}
+	}
+
+	if p.Schema != nil {
+		w, e := schemaMap(p.Schema).Validate(c)
+		ws = append(ws, w...)
+		es = append(es, e...)
+	}
+
+	if p.ValidateFunc != nil {
+		w, e := p.ValidateFunc(c)
+		ws = append(ws, w...)
+		es = append(es, e...)
+	}
+
+	return ws, es
 }
