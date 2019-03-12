@@ -76,10 +76,10 @@ resource "matchbox_profile" "container-linux-install" {
 resource "matchbox_group" "node1" {
   name = "node1"
   profile = "${matchbox_profile.container-linux-install.name}"
-  selector {
+  selector = {
     mac = "52:54:00:a1:9c:ae"
   }
-  metadata {
+  metadata = {
     custom_variable = "machine_specific_value_here"
     ssh_authorized_key = "${var.ssh_authorized_key}"
   }

@@ -18,11 +18,11 @@ func TestResourceGroup(t *testing.T) {
 		resource "matchbox_group" "default" {
  			name    = "default"
   			profile = "foo"
-  			selector {
+  			selector = {
 				  qux = "baz"
 			}
 
-			metadata {
+			metadata = {
 				foo = "bar"
  			}
 		}
