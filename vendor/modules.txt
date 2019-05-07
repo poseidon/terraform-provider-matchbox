@@ -1,5 +1,3 @@
-# github.com/Sirupsen/logrus v0.10.0
-github.com/Sirupsen/logrus
 # github.com/agext/levenshtein v1.2.2
 github.com/agext/levenshtein
 # github.com/apparentlymart/go-cidr v1.0.0
@@ -49,16 +47,6 @@ github.com/bgentry/go-netrc/netrc
 github.com/bgentry/speakeasy
 # github.com/blang/semver v3.5.1+incompatible
 github.com/blang/semver
-# github.com/coreos/matchbox v0.7.0
-github.com/coreos/matchbox/matchbox/client
-github.com/coreos/matchbox/matchbox/server/serverpb
-github.com/coreos/matchbox/matchbox/storage/storagepb
-github.com/coreos/matchbox/matchbox/rpc/rpcpb
-github.com/coreos/matchbox/matchbox/rpc
-github.com/coreos/matchbox/matchbox/server
-github.com/coreos/matchbox/matchbox/storage
-github.com/coreos/matchbox/matchbox/storage/testfakes
-github.com/coreos/matchbox/matchbox/tlsutil
 # github.com/davecgh/go-spew v1.1.1
 github.com/davecgh/go-spew/spew
 # github.com/fatih/color v1.7.0
@@ -173,6 +161,8 @@ github.com/hashicorp/terraform-config-inspect/tfconfig
 github.com/hashicorp/yamux
 # github.com/jmespath/go-jmespath v0.0.0-20180206201540-c2b33e8439af
 github.com/jmespath/go-jmespath
+# github.com/konsorten/go-windows-terminal-sequences v1.0.1
+github.com/konsorten/go-windows-terminal-sequences
 # github.com/mattn/go-colorable v0.1.1
 github.com/mattn/go-colorable
 # github.com/mattn/go-isatty v0.0.5
@@ -197,11 +187,23 @@ github.com/mitchellh/mapstructure
 github.com/mitchellh/reflectwalk
 # github.com/oklog/run v1.0.0
 github.com/oklog/run
+# github.com/poseidon/matchbox v0.8.0
+github.com/poseidon/matchbox/matchbox/client
+github.com/poseidon/matchbox/matchbox/server/serverpb
+github.com/poseidon/matchbox/matchbox/storage/storagepb
+github.com/poseidon/matchbox/matchbox/rpc/rpcpb
+github.com/poseidon/matchbox/matchbox/rpc
+github.com/poseidon/matchbox/matchbox/server
+github.com/poseidon/matchbox/matchbox/storage
+github.com/poseidon/matchbox/matchbox/storage/testfakes
+github.com/poseidon/matchbox/matchbox/tlsutil
 # github.com/posener/complete v1.2.1
 github.com/posener/complete
 github.com/posener/complete/cmd/install
 github.com/posener/complete/cmd
 github.com/posener/complete/match
+# github.com/sirupsen/logrus v1.3.0
+github.com/sirupsen/logrus
 # github.com/spf13/afero v1.2.1
 github.com/spf13/afero
 github.com/spf13/afero/mem
@@ -230,6 +232,7 @@ golang.org/x/crypto/openpgp/errors
 golang.org/x/crypto/openpgp/packet
 golang.org/x/crypto/openpgp/s2k
 golang.org/x/crypto/blowfish
+golang.org/x/crypto/ssh/terminal
 golang.org/x/crypto/cast5
 golang.org/x/crypto/openpgp/elgamal
 # golang.org/x/net v0.0.0-20190213061140-3a22650c66bd
@@ -242,6 +245,7 @@ golang.org/x/net/idna
 golang.org/x/net/http/httpguts
 # golang.org/x/sys v0.0.0-20190222072716-a9d3bda3a223
 golang.org/x/sys/unix
+golang.org/x/sys/windows
 # golang.org/x/text v0.3.1-0.20180807135948-17ff2d5776d2
 golang.org/x/text/unicode/norm
 golang.org/x/text/transform

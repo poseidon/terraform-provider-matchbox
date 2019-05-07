@@ -6,7 +6,7 @@ import (
 	"errors"
 	"time"
 
-	matchbox "github.com/coreos/matchbox/matchbox/client"
+	matchbox "github.com/poseidon/matchbox/matchbox/client"
 )
 
 var (

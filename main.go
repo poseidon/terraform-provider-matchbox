@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/hashicorp/terraform/plugin"
 
-	"github.com/coreos/terraform-provider-matchbox/matchbox"
+	"github.com/poseidon/terraform-provider-matchbox/matchbox"
 )
 
 func main() {

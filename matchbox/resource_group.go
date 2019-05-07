@@ -3,10 +3,10 @@ package matchbox
 import (
 	"context"
 
-	matchbox "github.com/coreos/matchbox/matchbox/client"
-	"github.com/coreos/matchbox/matchbox/server/serverpb"
-	"github.com/coreos/matchbox/matchbox/storage/storagepb"
 	"github.com/hashicorp/terraform/helper/schema"
+	matchbox "github.com/poseidon/matchbox/matchbox/client"
+	"github.com/poseidon/matchbox/matchbox/server/serverpb"
+	"github.com/poseidon/matchbox/matchbox/storage/storagepb"
 )
 
 func resourceGroup() *schema.Resource {

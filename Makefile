@@ -11,7 +11,7 @@ all: build test vet lint fmt
 build: clean bin/terraform-provider-matchbox
 
 bin/terraform-provider-matchbox:
-	@go build -o $@ -v github.com/coreos/terraform-provider-matchbox
+	@go build -o $@ -v github.com/poseidon/terraform-provider-matchbox
 
 .PHONY: test
 test:
@@ -60,7 +60,7 @@ _output/linux-amd64/terraform-provider-matchbox: GOARGS = GOOS=linux GOARCH=amd6
 _output/darwin-amd64/terraform-provider-matchbox: GOARGS = GOOS=darwin GOARCH=amd64
 _output/windows-amd64/terraform-provider-matchbox: GOARGS = GOOS=windows GOARCH=amd64
 _output/%/terraform-provider-matchbox:
-	$(GOARGS) go build -o $@ github.com/coreos/terraform-provider-matchbox
+	$(GOARGS) go build -o $@ github.com/poseidon/terraform-provider-matchbox
 
 .PHONY: certificates
 certificates:

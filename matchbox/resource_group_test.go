@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/coreos/matchbox/matchbox/storage/testfakes"
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
+	"github.com/poseidon/matchbox/matchbox/storage/testfakes"
 )
 
 func TestResourceGroup(t *testing.T) {

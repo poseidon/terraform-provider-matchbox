@@ -1,6 +1,6 @@
 # terraform-provider-matchbox
 
-`terraform-provider-matchbox` allows defining CoreOS [Matchbox](https://github.com/coreos/matchbox) Profiles and Groups in Terraform. Matchbox matches machines, by label (e.g. MAC address), to Profiles with iPXE configs, Container Linux configs, or generic free-form configs to provision clusters. Resources are created via the client certificate authenticated Matchbox API.
+`terraform-provider-matchbox` allows defining CoreOS [Matchbox](https://github.com/poseidon/matchbox) Profiles and Groups in Terraform. Matchbox matches machines, by label (e.g. MAC address), to Profiles with iPXE configs, Container Linux configs, or generic free-form configs to provision clusters. Resources are created via the client certificate authenticated Matchbox API.
 
 ## Requirements
 
@@ -14,7 +14,7 @@ Add the `terraform-provider-matchbox` plugin binary for your system to the Terra
 
 ```sh
 VERSION=v0.2.3
-wget https://github.com/coreos/terraform-provider-matchbox/releases/download/$VERSION/terraform-provider-matchbox-$VERSION-linux-amd64.tar.gz
+wget https://github.com/poseidon/terraform-provider-matchbox/releases/download/$VERSION/terraform-provider-matchbox-$VERSION-linux-amd64.tar.gz
 tar xzf terraform-provider-matchbox-$VERSION-linux-amd64.tar.gz
 mv terraform-provider-matchbox-$VERSION-linux-amd64/terraform-provider-matchbox ~/.terraform.d/plugins/terraform-provider-matchbox_$VERSION
 ```
@@ -86,7 +86,7 @@ resource "matchbox_group" "node1" {
 }
 ```
 
-See [examples](https://github.com/coreos/matchbox/tree/master/examples/terraform) for Terraform configs which PXE boot, install CoreOS, and provision entire clusters.
+See [examples](https://github.com/poseidon/matchbox/tree/master/examples/terraform) for Terraform configs which PXE boot, install CoreOS, and provision entire clusters.
 
 ## Development
 
