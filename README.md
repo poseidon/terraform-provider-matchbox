@@ -1,11 +1,11 @@
 # terraform-provider-matchbox
 
-`terraform-provider-matchbox` allows defining CoreOS [Matchbox](https://github.com/poseidon/matchbox) Profiles and Groups in Terraform. Matchbox matches machines, by label (e.g. MAC address), to Profiles with iPXE configs, Container Linux configs, or generic free-form configs to provision clusters. Resources are created via the client certificate authenticated Matchbox API.
+`terraform-provider-matchbox` allows defining [Matchbox](https://github.com/poseidon/matchbox) Profiles and Groups in Terraform. Matchbox matches machines, by label (e.g. MAC address), to Profiles with iPXE configs, Container Linux configs, or generic free-form configs to provision clusters. Resources are created via the client certificate authenticated Matchbox API.
 
 ## Requirements
 
 * Terraform v0.11+ [installed](https://www.terraform.io/downloads.html)
-* Matchbox v0.6+ [installed](https://coreos.com/matchbox/docs/latest/deployment.html) (v0.7+ to use the `generic_config` field)
+* Matchbox v0.8+ [installed](https://coreos.com/matchbox/docs/latest/deployment.html)
 * Matchbox credentials `client.crt`, `client.key`, `ca.crt`
 
 ## Install
