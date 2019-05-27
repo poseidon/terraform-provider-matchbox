@@ -13,7 +13,7 @@
 Add the `terraform-provider-matchbox` plugin binary for your system to the Terraform 3rd-party [plugin directory](https://www.terraform.io/docs/configuration/providers.html#third-party-plugins) `~/.terraform.d/plugins`.
 
 ```sh
-VERSION=v0.2.3
+VERSION=v0.3.0
 wget https://github.com/poseidon/terraform-provider-matchbox/releases/download/$VERSION/terraform-provider-matchbox-$VERSION-linux-amd64.tar.gz
 tar xzf terraform-provider-matchbox-$VERSION-linux-amd64.tar.gz
 mv terraform-provider-matchbox-$VERSION-linux-amd64/terraform-provider-matchbox ~/.terraform.d/plugins/terraform-provider-matchbox_$VERSION
@@ -26,7 +26,8 @@ $ tree ~/.terraform.d/
 /home/user/.terraform.d/
 └── plugins
     ├── terraform-provider-matchbox_v0.2.2
-    └── terraform-provider-matchbox_v0.2.3
+    ├── terraform-provider-matchbox_v0.2.3
+    └── terraform-provider-matchbox_v0.3.0
 ```
 
 ## Usage
@@ -37,7 +38,7 @@ Configure the Matchbox provider to use your Matchbox API endpoint and client cer
 
 ```tf
 provider "matchbox" {
-  version = "0.2.3"
+  version = "0.3.0"
   endpoint    = "matchbox.example.com:8081"
   client_cert = "${file("~/.matchbox/client.crt")}"
   client_key  = "${file("~/.matchbox/client.key")}"

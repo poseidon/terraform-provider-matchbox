@@ -4,6 +4,8 @@ Notable changes between releases.
 
 ## Latest
 
+## v0.3.0
+
 * Add compatibility with Terraform v0.12. Retain v0.11 compatibility ([#42](https://github.com/poseidon/terraform-provider-matchbox/pull/42))
 
 ## v0.2.3
