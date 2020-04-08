@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	matchbox "github.com/poseidon/matchbox/matchbox/client"
 	"github.com/poseidon/matchbox/matchbox/server/serverpb"
 	"github.com/poseidon/matchbox/matchbox/storage/storagepb"

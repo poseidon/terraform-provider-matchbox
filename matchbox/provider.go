@@ -3,14 +3,13 @@ package matchbox
 import (
 	"fmt"
 
-	"github.com/hashicorp/terraform/helper/schema"
-	"github.com/hashicorp/terraform/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/terraform"
 )
 
-// Provider returns the provider schema to Terraform.
+// Provider returns a ResourceProvider for Matchbox.
 func Provider() terraform.ResourceProvider {
 	return &schema.Provider{
-		// Provider configuration
 		Schema: map[string]*schema.Schema{
 			"endpoint": &schema.Schema{
 				Type:     schema.TypeString,

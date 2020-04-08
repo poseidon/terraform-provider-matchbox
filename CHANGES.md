@@ -4,6 +4,8 @@ Notable changes between releases.
 
 ## Latest
 
+* Migrate to the Terraform Plugin SDK ([#49](https://github.com/poseidon/terraform-provider-matchbox/pull/49))
+
 ## v0.3.0
 
 * Add compatibility with Terraform v0.12. Retain v0.11 compatibility ([#42](https://github.com/poseidon/terraform-provider-matchbox/pull/42))
