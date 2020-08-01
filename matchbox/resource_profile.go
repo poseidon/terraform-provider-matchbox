@@ -44,7 +44,6 @@ func resourceProfile() *schema.Resource {
 				Optional: true,
 				ForceNew: true,
 			},
-			// recommended
 			"container_linux_config": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,

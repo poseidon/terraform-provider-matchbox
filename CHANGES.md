@@ -4,6 +4,8 @@ Notable changes between releases.
 
 ## Latest
 
+## v0.4.0
+
 * Migrate to the Terraform Plugin SDK ([#49](https://github.com/poseidon/terraform-provider-matchbox/pull/49))
 
 ## v0.3.0

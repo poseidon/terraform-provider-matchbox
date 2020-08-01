@@ -1,55 +1,21 @@
 # terraform-provider-matchbox
 
-`terraform-provider-matchbox` allows defining [Matchbox](https://github.com/poseidon/matchbox) Profiles and Groups in Terraform. Matchbox matches machines, by label (e.g. MAC address), to Profiles with iPXE configs, Container Linux configs, or generic free-form configs to provision clusters. Resources are created via the client certificate authenticated Matchbox API.
-
-## Requirements
-
-* Terraform v0.11+ [installed](https://www.terraform.io/downloads.html)
-* Matchbox v0.8+ [installed](https://coreos.com/matchbox/docs/latest/deployment.html)
-* Matchbox credentials `client.crt`, `client.key`, `ca.crt`
-
-## Install
-
-Add the `terraform-provider-matchbox` plugin binary for your system to the Terraform 3rd-party [plugin directory](https://www.terraform.io/docs/configuration/providers.html#third-party-plugins) `~/.terraform.d/plugins`.
-
-```sh
-VERSION=v0.3.0
-wget https://github.com/poseidon/terraform-provider-matchbox/releases/download/$VERSION/terraform-provider-matchbox-$VERSION-linux-amd64.tar.gz
-tar xzf terraform-provider-matchbox-$VERSION-linux-amd64.tar.gz
-mv terraform-provider-matchbox-$VERSION-linux-amd64/terraform-provider-matchbox ~/.terraform.d/plugins/terraform-provider-matchbox_$VERSION
-```
-
-Terraform plugin binary names are versioned to allow for migrations of managed infrastructure.
-
-```
-$ tree ~/.terraform.d/
-/home/user/.terraform.d/
-└── plugins
-    ├── terraform-provider-matchbox_v0.2.2
-    ├── terraform-provider-matchbox_v0.2.3
-    └── terraform-provider-matchbox_v0.3.0
-```
+`terraform-provider-matchbox` allows defining [Matchbox](https://github.com/poseidon/matchbox) Profiles and Groups in Terraform. Matchbox matches machines, by label (e.g. MAC address), to Profiles with iPXE configs, Ignition configs, or generic free-form configs to provision clusters. Resources are created via the client certificate authenticated Matchbox API.
 
 ## Usage
 
-[Setup](https://coreos.com/matchbox/docs/latest/network-setup.html) a PXE network boot environment and [deploy](https://coreos.com/matchbox/docs/latest/deployment.html) a Matchbox instance. Be sure to enable the gRPC API and follow the instructions to generate TLS credentials.
+[Setup](https://matchbox.psdn.io/network-setup/) a PXE network boot environment and [deploy](https://matchbox.psdn.io/deployment/) a Matchbox instance. Be sure to enable the gRPC API and follow the instructions to generate TLS credentials.
 
-Configure the Matchbox provider to use your Matchbox API endpoint and client certificate in a `providers.tf` file.
+Configure the Matchbox provider with the Matchbox API endpoint and client certificate (e.g. `providers.tf`).
 
 ```tf
 provider "matchbox" {
-  version = "0.3.0"
+  version = "0.4.0"
   endpoint    = "matchbox.example.com:8081"
   client_cert = "${file("~/.matchbox/client.crt")}"
   client_key  = "${file("~/.matchbox/client.key")}"
   ca          = "${file("~/.matchbox/ca.crt")}"
 }
-```
-
-Run `terraform init` to ensure plugin version requirements are met.
-
-```
-$ terraform init
 ```
 
 Define a Matchbox Profile or Group resource in Terraform.
@@ -87,13 +53,46 @@ resource "matchbox_group" "node1" {
 }
 ```
 
+Run `terraform init` to ensure plugin version requirements are met.
+
+```
+$ terraform init
+```
+
 See [examples](https://github.com/poseidon/matchbox/tree/master/examples/terraform) for Terraform configs which PXE boot, install CoreOS, and provision entire clusters.
+
+## Requirements
+
+* Terraform v0.11+ [installed](https://www.terraform.io/downloads.html)
+* Matchbox v0.8+ [installed](https://matchbox.psdn.io/deployment/)
+* Matchbox credentials `client.crt`, `client.key`, `ca.crt`
+
+## Install
+
+Add the `terraform-provider-matchbox` plugin binary for your system to the Terraform 3rd-party [plugin directory](https://www.terraform.io/docs/configuration/providers.html#third-party-plugins) `~/.terraform.d/plugins`.
+
+```sh
+VERSION=v0.4.0
+wget https://github.com/poseidon/terraform-provider-matchbox/releases/download/$VERSION/terraform-provider-matchbox-$VERSION-linux-amd64.tar.gz
+tar xzf terraform-provider-matchbox-$VERSION-linux-amd64.tar.gz
+mv terraform-provider-matchbox-$VERSION-linux-amd64/terraform-provider-matchbox ~/.terraform.d/plugins/terraform-provider-matchbox_$VERSION
+```
+
+Terraform plugin binary names are versioned to allow for migrations of managed infrastructure.
+
+```
+$ tree ~/.terraform.d/
+/home/user/.terraform.d/
+└── plugins
+    ├── terraform-provider-matchbox_v0.3.0
+    └── terraform-provider-matchbox_v0.4.0
+```
 
 ## Development
 
 ### Binary
 
-To develop the provider plugin locally, build an executable with Go 1.11+.
+To develop the provider plugin locally, build an executable with Go 1.12+.
 
 ```
 make
