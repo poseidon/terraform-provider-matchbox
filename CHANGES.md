@@ -4,9 +4,15 @@ Notable changes between releases.
 
 ## Latest
 
+## v0.4.1
+
+* Fix zip archive artifacts for Darwin and Windows ([#53](https://github.com/poseidon/terraform-provider-matchbox/pull/53))
+
 ## v0.4.0
 
 * Migrate to the Terraform Plugin SDK ([#49](https://github.com/poseidon/terraform-provider-matchbox/pull/49))
+* Add Linux ARM64 release artifacts
+* Add zip archive format with signed checksum
 
 ## v0.3.0
 

@@ -50,10 +50,10 @@ release: \
 	_output/plugin-linux-arm64.tar.gz \
 	_output/plugin-darwin-amd64.tar.gz \
 	_output/plugin-windows-amd64.tar.gz \
-	_output/plugin-linux_amd64.zip \
-	_output/plugin-linux_arm64.zip \
-	_output/plugin-darwin_amd64.zip \
-	_output/plugin-windows_amd64.zip
+	_output/plugin-linux-amd64.zip \
+	_output/plugin-linux-arm64.zip \
+	_output/plugin-darwin-amd64.zip \
+	_output/plugin-windows-amd64.zip
 
 _output/plugin-%.tar.gz: NAME=terraform-provider-matchbox-$(VERSION)-$*
 _output/plugin-%.tar.gz: DEST=_output/$(NAME)
@@ -62,7 +62,7 @@ _output/plugin-%.tar.gz: _output/%/terraform-provider-matchbox
 	@cp _output/$*/terraform-provider-matchbox $(DEST)
 	@tar zcvf $(DEST).tar.gz -C _output $(NAME)
 
-_output/plugin-%.zip: NAME=terraform-provider-matchbox_$(SEMVER)_$*
+_output/plugin-%.zip: NAME=terraform-provider-matchbox_$(SEMVER)_$(subst -,_,$*)
 _output/plugin-%.zip: DEST=_output/$(NAME)
 _output/plugin-%.zip: _output/%/terraform-provider-matchbox
 	@mkdir -p $(DEST)
