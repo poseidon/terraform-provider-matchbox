@@ -10,11 +10,19 @@ Configure the Matchbox provider with the Matchbox API endpoint and client certif
 
 ```tf
 provider "matchbox" {
-  version = "0.4.0"
   endpoint    = "matchbox.example.com:8081"
   client_cert = "${file("~/.matchbox/client.crt")}"
   client_key  = "${file("~/.matchbox/client.key")}"
   ca          = "${file("~/.matchbox/ca.crt")}"
+}
+
+terraform {
+  required_providers {
+    matchbox = {
+      source = "poseidon/matchbox"
+      version = "0.4.1"
+    }
+  }
 }
 ```
 
