@@ -1,4 +1,4 @@
-# terraform-provider-matchbox
+# terraform-provider-matchbox [![Build Status](https://github.com/poseidon/terraform-provider-matchbox/workflows/test/badge.svg)](https://github.com/poseidon/terraform-provider-matchbox/actions?query=workflow%3Atest+branch%3Amaster)
 
 `terraform-provider-matchbox` allows defining [Matchbox](https://github.com/poseidon/matchbox) Profiles and Groups in Terraform. Matchbox matches machines, by label (e.g. MAC address), to Profiles with iPXE configs, Ignition configs, or generic free-form configs to provision clusters. Resources are created via the client certificate authenticated Matchbox API.
 
