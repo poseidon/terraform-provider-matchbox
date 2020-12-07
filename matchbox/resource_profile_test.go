@@ -5,8 +5,8 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	"github.com/poseidon/matchbox/matchbox/storage/testfakes"
 )
 
@@ -81,9 +81,8 @@ func TestResourceProfile(t *testing.T) {
 		return nil
 	}
 
-	resource.Test(t, resource.TestCase{
-		IsUnitTest: true,
-		Providers:  providers,
+	resource.UnitTest(t, resource.TestCase{
+		Providers: testProviders,
 		Steps: []resource.TestStep{{
 			Config: srv.AddProviderConfig(hcl),
 			Check:  check,
@@ -135,9 +134,8 @@ func TestResourceProfile_withIgnition(t *testing.T) {
 		return nil
 	}
 
-	resource.Test(t, resource.TestCase{
-		IsUnitTest: true,
-		Providers:  providers,
+	resource.UnitTest(t, resource.TestCase{
+		Providers: testProviders,
 		Steps: []resource.TestStep{{
 			Config: srv.AddProviderConfig(hcl),
 			Check:  check,
@@ -159,9 +157,8 @@ func TestResourceProfile_withIgnitionAndContainerLinuxConfig(t *testing.T) {
 		}
 	`
 
-	resource.Test(t, resource.TestCase{
-		IsUnitTest: true,
-		Providers:  providers,
+	resource.UnitTest(t, resource.TestCase{
+		Providers: testProviders,
 		Steps: []resource.TestStep{{
 			Config:      srv.AddProviderConfig(hcl),
 			ExpectError: regexp.MustCompile("are mutually exclusive"),

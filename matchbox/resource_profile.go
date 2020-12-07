@@ -5,7 +5,9 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+
 	matchbox "github.com/poseidon/matchbox/matchbox/client"
 	"github.com/poseidon/matchbox/matchbox/server/serverpb"
 	"github.com/poseidon/matchbox/matchbox/storage/storagepb"
@@ -13,9 +15,9 @@ import (
 
 func resourceProfile() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceProfileCreate,
-		Read:   resourceProfileRead,
-		Delete: resourceProfileDelete,
+		CreateContext: resourceProfileCreate,
+		ReadContext:   resourceProfileRead,
+		DeleteContext: resourceProfileDelete,
 
 		Schema: map[string]*schema.Schema{
 			"name": &schema.Schema{
@@ -65,12 +67,12 @@ func resourceProfile() *schema.Resource {
 
 // resourceProfileCreate creates a Profile and its associated configs. Partial
 // creates do not modify state and can be retried safely.
-func resourceProfileCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceProfileCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	var diags diag.Diagnostics
 	client := meta.(*matchbox.Client)
-	ctx := context.TODO()
 
 	if err := validateResourceProfile(d); err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	// Profile
@@ -105,7 +107,7 @@ func resourceProfileCreate(d *schema.ResourceData, meta interface{}) error {
 		Profile: profile,
 	})
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	// Container Linux Config
@@ -115,7 +117,7 @@ func resourceProfileCreate(d *schema.ResourceData, meta interface{}) error {
 			Config: []byte(content),
 		})
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 	}
 
@@ -126,12 +128,12 @@ func resourceProfileCreate(d *schema.ResourceData, meta interface{}) error {
 			Config: []byte(content),
 		})
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 	}
 
 	d.SetId(profile.GetId())
-	return err
+	return diags
 }
 
 func validateResourceProfile(d *schema.ResourceData) error {
@@ -143,9 +145,9 @@ func validateResourceProfile(d *schema.ResourceData) error {
 	return nil
 }
 
-func resourceProfileRead(d *schema.ResourceData, meta interface{}) error {
+func resourceProfileRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	var diags diag.Diagnostics
 	client := meta.(*matchbox.Client)
-	ctx := context.TODO()
 
 	// Profile
 	name := d.Get("name").(string)
@@ -155,7 +157,7 @@ func resourceProfileRead(d *schema.ResourceData, meta interface{}) error {
 	if err != nil {
 		// resource doesn't exist or is corrupted and needs creating
 		d.SetId("")
-		return nil
+		return diags
 	}
 
 	// Container Linux Config
@@ -166,7 +168,7 @@ func resourceProfileRead(d *schema.ResourceData, meta interface{}) error {
 		if err != nil {
 			// resource doesn't exist or is corrupted and needs creating
 			d.SetId("")
-			return nil
+			return diags
 		}
 	}
 
@@ -178,19 +180,19 @@ func resourceProfileRead(d *schema.ResourceData, meta interface{}) error {
 		if err != nil {
 			// resource doesn't exist or is corrupted and needs creating
 			d.SetId("")
-			return nil
+			return diags
 		}
 	}
 
-	return nil
+	return diags
 }
 
 // resourceProfileDelete deletes a Profile and its associated configs. Partial
 // deletes leave state unchanged and can be retried (deleting resources which
 // no longer exist is a no-op).
-func resourceProfileDelete(d *schema.ResourceData, meta interface{}) error {
+func resourceProfileDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	var diags diag.Diagnostics
 	client := meta.(*matchbox.Client)
-	ctx := context.TODO()
 
 	// Profile
 	name := d.Get("name").(string)
@@ -198,7 +200,7 @@ func resourceProfileDelete(d *schema.ResourceData, meta interface{}) error {
 		Id: name,
 	})
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	// Container Linux Config
@@ -207,7 +209,7 @@ func resourceProfileDelete(d *schema.ResourceData, meta interface{}) error {
 			Name: name,
 		})
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 	}
 
@@ -217,13 +219,13 @@ func resourceProfileDelete(d *schema.ResourceData, meta interface{}) error {
 			Name: name,
 		})
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 	}
 
 	// resource can be destroyed in state
 	d.SetId("")
-	return nil
+	return diags
 }
 
 func containerLinuxConfig(d *schema.ResourceData) (filename, config string) {

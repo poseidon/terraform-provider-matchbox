@@ -4,6 +4,8 @@ Notable changes between releases.
 
 ## Latest
 
+* Migrate Terraform Plugin SDK from v1.9.0 to v2.3.0 ([#56](https://github.com/poseidon/terraform-provider-matchbox/pull/56))
+
 ## v0.4.1
 
 * Fix zip archive artifacts for Darwin and Windows ([#53](https://github.com/poseidon/terraform-provider-matchbox/pull/53))

@@ -20,6 +20,10 @@ jobs:
         with:
           go-version: ${{matrix.go}}
 
+      - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_wrapper: false
+
       - name: checkout
         uses: actions/checkout@v2
 

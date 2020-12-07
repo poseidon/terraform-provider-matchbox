@@ -3,7 +3,9 @@ package matchbox
 import (
 	"context"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+
 	matchbox "github.com/poseidon/matchbox/matchbox/client"
 	"github.com/poseidon/matchbox/matchbox/server/serverpb"
 	"github.com/poseidon/matchbox/matchbox/storage/storagepb"
@@ -11,9 +13,9 @@ import (
 
 func resourceGroup() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceGroupCreate,
-		Read:   resourceGroupRead,
-		Delete: resourceGroupDelete,
+		CreateContext: resourceGroupCreate,
+		ReadContext:   resourceGroupRead,
+		DeleteContext: resourceGroupDelete,
 
 		Schema: map[string]*schema.Schema{
 			"name": &schema.Schema{
@@ -42,10 +44,10 @@ func resourceGroup() *schema.Resource {
 	}
 }
 
-func resourceGroupCreate(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*matchbox.Client)
-	ctx := context.TODO()
+func resourceGroupCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	var diags diag.Diagnostics
 
+	client := meta.(*matchbox.Client)
 	name := d.Get("name").(string)
 
 	selectors := map[string]string{}
@@ -61,23 +63,23 @@ func resourceGroupCreate(d *schema.ResourceData, meta interface{}) error {
 	}
 	group, err := richGroup.ToGroup()
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	_, err = client.Groups.GroupPut(ctx, &serverpb.GroupPutRequest{
 		Group: group,
 	})
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId(group.GetId())
-	return err
+	return diags
 }
 
-func resourceGroupRead(d *schema.ResourceData, meta interface{}) error {
+func resourceGroupRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	var diags diag.Diagnostics
 	client := meta.(*matchbox.Client)
-	ctx := context.TODO()
 
 	name := d.Get("name").(string)
 	_, err := client.Groups.GroupGet(ctx, &serverpb.GroupGetRequest{
@@ -88,20 +90,20 @@ func resourceGroupRead(d *schema.ResourceData, meta interface{}) error {
 		d.SetId("")
 		return nil
 	}
-	return err
+	return diags
 }
 
-func resourceGroupDelete(d *schema.ResourceData, meta interface{}) error {
+func resourceGroupDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	var diags diag.Diagnostics
 	client := meta.(*matchbox.Client)
-	ctx := context.TODO()
 
 	name := d.Get("name").(string)
 	_, err := client.Groups.GroupDelete(ctx, &serverpb.GroupDeleteRequest{
 		Id: name,
 	})
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId("")
-	return nil
+	return diags
 }
