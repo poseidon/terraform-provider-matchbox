@@ -16,15 +16,15 @@ func TestResourceGroup(t *testing.T) {
 
 	hcl := `
 		resource "matchbox_group" "default" {
- 			name    = "default"
-  			profile = "foo"
-  			selector = {
+			name    = "default"
+			profile = "foo"
+			selector = {
 				  qux = "baz"
 			}
 
 			metadata = {
 				foo = "bar"
- 			}
+			}
 		}
 	`
 
