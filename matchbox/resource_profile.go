@@ -174,7 +174,7 @@ func resourceProfileRead(ctx context.Context, d *schema.ResourceData, meta inter
 
 	if profile.IgnitionId != "" {
 		ignition, err := client.Ignition.IgnitionGet(ctx, &serverpb.IgnitionGetRequest{
-			Name:                 profile.IgnitionId,
+			Name: profile.IgnitionId,
 		})
 		if err != nil {
 			// resource doesn't exist or is corrupted and needs creating
@@ -195,7 +195,7 @@ func resourceProfileRead(ctx context.Context, d *schema.ResourceData, meta inter
 
 	if profile.GenericId != "" {
 		ignition, err := client.Generic.GenericGet(ctx, &serverpb.GenericGetRequest{
-			Name:                 profile.GenericId,
+			Name: profile.GenericId,
 		})
 		if err != nil {
 			// resource doesn't exist or is corrupted and needs creating
