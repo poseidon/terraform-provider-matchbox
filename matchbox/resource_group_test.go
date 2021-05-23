@@ -62,3 +62,43 @@ func TestResourceGroup(t *testing.T) {
 		}},
 	})
 }
+
+// TestResourceGroup_Read checks the provider compares the desired state with the actual matchbox state and not only
+// the Terraform state.
+func TestResourceGroup_Read(t *testing.T) {
+	srv := NewFixtureServer(clientTLSInfo, serverTLSInfo, testfakes.NewFixedStore())
+	go srv.Start()
+	defer srv.Stop()
+
+	hcl := `
+		resource "matchbox_group" "default" {
+			name    = "default"
+			profile = "foo"
+			selector = {
+				  qux = "baz"
+			}
+
+			metadata = {
+				foo = "bar"
+			}
+		}
+	`
+
+	resource.UnitTest(t, resource.TestCase{
+		Providers: testProviders,
+		Steps: []resource.TestStep{
+			{
+				Config: srv.AddProviderConfig(hcl),
+			},
+			{
+				PreConfig: func() {
+					group, _ := srv.Store.GroupGet("default")
+					group.Selector["bux"] = "qux"
+				},
+				Config:             srv.AddProviderConfig(hcl),
+				PlanOnly:           true,
+				ExpectNonEmptyPlan: true,
+			},
+		},
+	})
+}
