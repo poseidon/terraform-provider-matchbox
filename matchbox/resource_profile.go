@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -151,7 +152,7 @@ func resourceProfileRead(ctx context.Context, d *schema.ResourceData, meta inter
 
 	// Profile
 	name := d.Get("name").(string)
-	_, err := client.Profiles.ProfileGet(ctx, &serverpb.ProfileGetRequest{
+	profileGetResponse, err := client.Profiles.ProfileGet(ctx, &serverpb.ProfileGetRequest{
 		Id: name,
 	})
 	if err != nil {
@@ -160,27 +161,49 @@ func resourceProfileRead(ctx context.Context, d *schema.ResourceData, meta inter
 		return diags
 	}
 
-	// Container Linux Config
-	if name, content := containerLinuxConfig(d); content != "" {
-		_, err = client.Ignition.IgnitionGet(ctx, &serverpb.IgnitionGetRequest{
-			Name: name,
+	profile := profileGetResponse.Profile
+	if err := d.Set("kernel", profile.Boot.Kernel); err != nil {
+		return diag.FromErr(err)
+	}
+	if err := d.Set("initrd", profile.Boot.Initrd); err != nil {
+		return diag.FromErr(err)
+	}
+	if err := d.Set("args", profile.Boot.Args); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if profile.IgnitionId != "" {
+		ignition, err := client.Ignition.IgnitionGet(ctx, &serverpb.IgnitionGetRequest{
+			Name: profile.IgnitionId,
 		})
 		if err != nil {
 			// resource doesn't exist or is corrupted and needs creating
 			d.SetId("")
 			return diags
 		}
+		// .ign and .ignition files indicate raw ignition,
+		// see https://github.com/poseidon/matchbox/blob/d6bb21d5853e7af7c3c54b74537176caf5460482/matchbox/http/ignition.go#L18
+		if strings.HasSuffix(profile.IgnitionId, ".ign") || strings.HasSuffix(profile.IgnitionId, ".ignition") {
+			err = d.Set("raw_ignition", string(ignition.Config))
+		} else {
+			err = d.Set("container_linux_config", string(ignition.Config))
+		}
+		if err != nil {
+			return diag.FromErr(err)
+		}
 	}
 
-	// Generic Config
-	if name, content := genericConfig(d); content != "" {
-		_, err = client.Generic.GenericGet(ctx, &serverpb.GenericGetRequest{
-			Name: name,
+	if profile.GenericId != "" {
+		ignition, err := client.Generic.GenericGet(ctx, &serverpb.GenericGetRequest{
+			Name: profile.GenericId,
 		})
 		if err != nil {
 			// resource doesn't exist or is corrupted and needs creating
 			d.SetId("")
 			return diags
+		}
+		if err := d.Set("generic_config", string(ignition.Config)); err != nil {
+			return diag.FromErr(err)
 		}
 	}
 

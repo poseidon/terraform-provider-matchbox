@@ -164,5 +164,48 @@ func TestResourceProfile_withIgnitionAndContainerLinuxConfig(t *testing.T) {
 			ExpectError: regexp.MustCompile("are mutually exclusive"),
 		}},
 	})
+}
 
+// TestResourceProfile_Read checks the provider compares the desired state with the actual matchbox state and not only
+// the Terraform state.
+func TestResourceProfile_Read(t *testing.T) {
+	srv := NewFixtureServer(clientTLSInfo, serverTLSInfo, testfakes.NewFixedStore())
+	go srv.Start()
+	defer srv.Stop()
+
+	hcl := `
+		resource "matchbox_profile" "default" {
+			name   = "default"
+			kernel = "foo"
+
+			initrd = [
+				"bar",
+			]
+
+			args = [
+				"qux",
+			]
+
+			raw_ignition = "baz"
+		}
+	`
+
+	resource.UnitTest(t, resource.TestCase{
+		Providers: testProviders,
+		Steps: []resource.TestStep{
+			{
+				Config: srv.AddProviderConfig(hcl),
+			},
+			{
+				PreConfig: func() {
+					profile, _ := srv.Store.ProfileGet("default")
+					profile.Boot.Args = append(profile.Boot.Args, "bux")
+
+				},
+				Config:             srv.AddProviderConfig(hcl),
+				PlanOnly:           true,
+				ExpectNonEmptyPlan: true,
+			},
+		},
+	})
 }
