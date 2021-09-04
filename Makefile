@@ -39,10 +39,12 @@ release: \
 	_output/plugin-linux-amd64.tar.gz \
 	_output/plugin-linux-arm64.tar.gz \
 	_output/plugin-darwin-amd64.tar.gz \
+	_output/plugin-darwin-arm64.tar.gz \
 	_output/plugin-windows-amd64.tar.gz \
 	_output/plugin-linux-amd64.zip \
 	_output/plugin-linux-arm64.zip \
 	_output/plugin-darwin-amd64.zip \
+	_output/plugin-darwin-arm64.zip \
 	_output/plugin-windows-amd64.zip
 
 _output/plugin-%.tar.gz: NAME=terraform-provider-matchbox-$(VERSION)-$*
@@ -62,6 +64,7 @@ _output/plugin-%.zip: _output/%/terraform-provider-matchbox
 _output/linux-amd64/terraform-provider-matchbox: GOARGS = GOOS=linux GOARCH=amd64
 _output/linux-arm64/terraform-provider-matchbox: GOARGS = GOOS=linux GOARCH=arm64
 _output/darwin-amd64/terraform-provider-matchbox: GOARGS = GOOS=darwin GOARCH=amd64
+_output/darwin-arm64/terraform-provider-matchbox: GOARGS = GOOS=darwin GOARCH=arm64
 _output/windows-amd64/terraform-provider-matchbox: GOARGS = GOOS=windows GOARCH=amd64
 _output/%/terraform-provider-matchbox:
 	$(GOARGS) go build -o $@ github.com/poseidon/terraform-provider-matchbox
@@ -71,6 +74,7 @@ release-sign:
 	gpg2 --armor --detach-sign _output/terraform-provider-matchbox-$(VERSION)-linux-amd64.tar.gz
 	gpg2 --armor --detach-sign _output/terraform-provider-matchbox-$(VERSION)-linux-arm64.tar.gz
 	gpg2 --armor --detach-sign _output/terraform-provider-matchbox-$(VERSION)-darwin-amd64.tar.gz
+	gpg2 --armor --detach-sign _output/terraform-provider-matchbox-$(VERSION)-darwin-arm64.tar.gz
 	gpg2 --armor --detach-sign _output/terraform-provider-matchbox-$(VERSION)-windows-amd64.tar.gz
 	gpg2 --detach-sign _output/terraform-provider-matchbox_$(SEMVER)_SHA256SUMS
 
@@ -79,6 +83,7 @@ release-verify:
 	gpg2 --verify $(NAME)-$(VERSION)-linux-amd64.tar.gz.asc $(NAME)-$(VERSION)-linux-amd64.tar.gz
 	gpg2 --verify $(NAME)-$(VERSION)-linux-arm64.tar.gz.asc $(NAME)-$(VERSION)-linux-arm64.tar.gz
 	gpg2 --verify $(NAME)-$(VERSION)-darwin-amd64.tar.gz.asc $(NAME)-$(VERSION)-darwin-amd64.tar.gz
+	gpg2 --verify $(NAME)-$(VERSION)-darwin-arm64.tar.gz.asc $(NAME)-$(VERSION)-darwin-arm64.tar.gz
 	gpg2 --verify $(NAME)-$(VERSION)-windows-amd64.tar.gz.asc $(NAME)-$(VERSION)-windows-amd64.tar.gz
 	gpg2 --verify $(NAME)_$(SEMVER)_SHA256SUMS.sig $(NAME)_$(SEMVER)_SHA256SUMS
 
