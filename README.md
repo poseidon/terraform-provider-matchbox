@@ -71,7 +71,7 @@ See [examples](https://github.com/poseidon/matchbox/tree/master/examples/terrafo
 
 ## Requirements
 
-* Terraform v0.12+ [installed](https://www.terraform.io/downloads.html)
+* Terraform v0.13+ [installed](https://www.terraform.io/downloads.html)
 * Matchbox v0.8+ [installed](https://matchbox.psdn.io/deployment/)
 * Matchbox credentials `client.crt`, `client.key`, `ca.crt`
 
@@ -79,39 +79,8 @@ See [examples](https://github.com/poseidon/matchbox/tree/master/examples/terrafo
 
 ### Binary
 
-To develop the provider plugin locally, build an executable with Go 1.12+.
+To develop the provider plugin locally, build an executable with Go 1.16+.
 
 ```
 make
 ```
-
-### Vendor
-
-Add or update dependencies in `go.mod` and vendor.
-
-```
-make update
-make vendor
-```
-
-## Legacy Install
-
-For Terraform v0.12, add the `terraform-provider-matchbox` plugin binary for your system to the Terraform 3rd-party [plugin directory](https://www.terraform.io/docs/configuration/providers.html#third-party-plugins) `~/.terraform.d/plugins`.
-
-```sh
-VERSION=v0.4.0
-wget https://github.com/poseidon/terraform-provider-matchbox/releases/download/$VERSION/terraform-provider-matchbox-$VERSION-linux-amd64.tar.gz
-tar xzf terraform-provider-matchbox-$VERSION-linux-amd64.tar.gz
-mv terraform-provider-matchbox-$VERSION-linux-amd64/terraform-provider-matchbox ~/.terraform.d/plugins/terraform-provider-matchbox_$VERSION
-```
-
-Terraform plugin binary names are versioned to allow for migrations of managed infrastructure.
-
-```
-$ tree ~/.terraform.d/
-/home/user/.terraform.d/
-└── plugins
-    ├── terraform-provider-matchbox_v0.3.0
-    └── terraform-provider-matchbox_v0.4.0
-```
-
