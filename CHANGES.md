@@ -4,7 +4,9 @@ Notable changes between releases.
 
 ## Latest
 
-* Migrate Terraform Plugin SDK from v1.9.0 to v2.3.0 ([#56](https://github.com/poseidon/terraform-provider-matchbox/pull/56))
+## v0.5.0
+
+* Migrate Terraform Plugin SDK from v1.9.0 to v2.8.0
 * Remove Go module vendoring
 * Remove tarball release format
 

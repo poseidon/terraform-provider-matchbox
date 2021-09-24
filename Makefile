@@ -39,6 +39,7 @@ release: \
 	_output/plugin-linux-amd64.zip \
 	_output/plugin-linux-arm64.zip \
 	_output/plugin-darwin-amd64.zip \
+	_output/plugin-darwin-arm64.zip \
 	_output/plugin-windows-amd64.zip
 
 _output/plugin-%.zip: NAME=terraform-provider-matchbox_$(SEMVER)_$(subst -,_,$*)
@@ -51,6 +52,7 @@ _output/plugin-%.zip: _output/%/terraform-provider-matchbox
 _output/linux-amd64/terraform-provider-matchbox: GOARGS = GOOS=linux GOARCH=amd64
 _output/linux-arm64/terraform-provider-matchbox: GOARGS = GOOS=linux GOARCH=arm64
 _output/darwin-amd64/terraform-provider-matchbox: GOARGS = GOOS=darwin GOARCH=amd64
+_output/darwin-arm64/terraform-provider-matchbox: GOARGS = GOOS=darwin GOARCH=arm64
 _output/windows-amd64/terraform-provider-matchbox: GOARGS = GOOS=windows GOARCH=amd64
 _output/%/terraform-provider-matchbox:
 	$(GOARGS) go build -o $@ github.com/poseidon/terraform-provider-matchbox
