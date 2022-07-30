@@ -19,23 +19,23 @@ func resourceGroup() *schema.Resource {
 		DeleteContext: resourceGroupDelete,
 
 		Schema: map[string]*schema.Schema{
-			"name": &schema.Schema{
+			"name": {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
 			},
-			"profile": &schema.Schema{
+			"profile": {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
 			},
-			"selector": &schema.Schema{
+			"selector": {
 				Type:     schema.TypeMap,
 				Optional: true,
 				Elem:     schema.TypeString,
 				ForceNew: true,
 			},
-			"metadata": &schema.Schema{
+			"metadata": {
 				Type:     schema.TypeMap,
 				Optional: true,
 				Elem:     schema.TypeString,

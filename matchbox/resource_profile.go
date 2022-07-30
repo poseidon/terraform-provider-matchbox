@@ -21,17 +21,17 @@ func resourceProfile() *schema.Resource {
 		DeleteContext: resourceProfileDelete,
 
 		Schema: map[string]*schema.Schema{
-			"name": &schema.Schema{
+			"name": {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
 			},
-			"kernel": &schema.Schema{
+			"kernel": {
 				Type:     schema.TypeString,
 				Optional: true,
 				ForceNew: true,
 			},
-			"initrd": &schema.Schema{
+			"initrd": {
 				Type: schema.TypeList,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -39,7 +39,7 @@ func resourceProfile() *schema.Resource {
 				Optional: true,
 				ForceNew: true,
 			},
-			"args": &schema.Schema{
+			"args": {
 				Type: schema.TypeList,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -47,17 +47,17 @@ func resourceProfile() *schema.Resource {
 				Optional: true,
 				ForceNew: true,
 			},
-			"container_linux_config": &schema.Schema{
+			"container_linux_config": {
 				Type:     schema.TypeString,
 				Optional: true,
 				ForceNew: true,
 			},
-			"raw_ignition": &schema.Schema{
+			"raw_ignition": {
 				Type:     schema.TypeString,
 				Optional: true,
 				ForceNew: true,
 			},
-			"generic_config": &schema.Schema{
+			"generic_config": {
 				Type:     schema.TypeString,
 				Optional: true,
 				ForceNew: true,

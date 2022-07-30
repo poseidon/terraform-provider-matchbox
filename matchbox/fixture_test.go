@@ -60,15 +60,15 @@ func NewFixtureServer(clientTLS *TLSContents, serverTLS *tlsutil.TLSInfo, s stor
 	}
 }
 
-func (s *FixtureServer) Start() {
+func (s *FixtureServer) Start() error {
 	cfg, err := s.ServerTLS.ServerConfig()
 	if err != nil {
-		panic(fmt.Errorf("Invalid TLS credentials: %v", err))
+		return fmt.Errorf("Invalid TLS credentials: %v", err)
 	}
 
 	srv := server.NewServer(&server.Config{Store: s.Store})
 	s.Server = rpc.NewServer(srv, cfg)
-	s.Server.Serve(s.Listener)
+	return s.Server.Serve(s.Listener)
 }
 
 func (s *FixtureServer) Stop() {

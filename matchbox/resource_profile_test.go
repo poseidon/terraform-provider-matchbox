@@ -12,7 +12,12 @@ import (
 
 func TestResourceProfile(t *testing.T) {
 	srv := NewFixtureServer(clientTLSInfo, serverTLSInfo, testfakes.NewFixedStore())
-	go srv.Start()
+	go func() {
+		err := srv.Start()
+		if err != nil {
+			t.Errorf("fixture server start: %v", err)
+		}
+	}()
 	defer srv.Stop()
 
 	hcl := `
@@ -93,7 +98,12 @@ func TestResourceProfile(t *testing.T) {
 
 func TestResourceProfile_withIgnition(t *testing.T) {
 	srv := NewFixtureServer(clientTLSInfo, serverTLSInfo, testfakes.NewFixedStore())
-	go srv.Start()
+	go func() {
+		err := srv.Start()
+		if err != nil {
+			t.Errorf("fixture server start: %v", err)
+		}
+	}()
 	defer srv.Stop()
 
 	hcl := `
@@ -146,7 +156,12 @@ func TestResourceProfile_withIgnition(t *testing.T) {
 
 func TestResourceProfile_withIgnitionAndContainerLinuxConfig(t *testing.T) {
 	srv := NewFixtureServer(clientTLSInfo, serverTLSInfo, testfakes.NewFixedStore())
-	go srv.Start()
+	go func() {
+		err := srv.Start()
+		if err != nil {
+			t.Errorf("fixture server start: %v", err)
+		}
+	}()
 	defer srv.Stop()
 
 	hcl := `
@@ -170,7 +185,12 @@ func TestResourceProfile_withIgnitionAndContainerLinuxConfig(t *testing.T) {
 // the Terraform state.
 func TestResourceProfile_Read(t *testing.T) {
 	srv := NewFixtureServer(clientTLSInfo, serverTLSInfo, testfakes.NewFixedStore())
-	go srv.Start()
+	go func() {
+		err := srv.Start()
+		if err != nil {
+			t.Errorf("fixture server start: %v", err)
+		}
+	}()
 	defer srv.Stop()
 
 	hcl := `

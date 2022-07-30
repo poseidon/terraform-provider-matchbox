@@ -11,7 +11,12 @@ import (
 
 func TestResourceGroup(t *testing.T) {
 	srv := NewFixtureServer(clientTLSInfo, serverTLSInfo, testfakes.NewFixedStore())
-	go srv.Start()
+	go func() {
+		err := srv.Start()
+		if err != nil {
+			t.Errorf("fixture server start: %v", err)
+		}
+	}()
 	defer srv.Stop()
 
 	hcl := `
@@ -67,7 +72,12 @@ func TestResourceGroup(t *testing.T) {
 // the Terraform state.
 func TestResourceGroup_Read(t *testing.T) {
 	srv := NewFixtureServer(clientTLSInfo, serverTLSInfo, testfakes.NewFixedStore())
-	go srv.Start()
+	go func() {
+		err := srv.Start()
+		if err != nil {
+			t.Errorf("fixture server start: %v", err)
+		}
+	}()
 	defer srv.Stop()
 
 	hcl := `

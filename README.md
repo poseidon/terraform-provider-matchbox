@@ -79,7 +79,7 @@ See [examples](https://github.com/poseidon/matchbox/tree/master/examples/terrafo
 
 ### Binary
 
-To develop the provider plugin locally, build an executable with Go 1.16+.
+To develop the provider plugin locally, build an executable with Go 1.17+.
 
 ```
 make
