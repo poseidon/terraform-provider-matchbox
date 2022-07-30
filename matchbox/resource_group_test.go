@@ -1,13 +1,31 @@
 package matchbox
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	"github.com/poseidon/matchbox/matchbox/storage/testfakes"
 )
+
+const groupWithAllFields = `
+	resource "matchbox_group" "default" {
+		name    = "default"
+		profile = "worker"
+		selector = {
+			os = "installed"
+		}
+		metadata = {
+			user = "core"
+		}
+	}
+`
+
+const groupMinimal = `
+	resource "matchbox_group" "default" {
+		name    = "minimal"
+		profile = "worker"
+	}
+`
 
 func TestResourceGroup(t *testing.T) {
 	srv := NewFixtureServer(clientTLSInfo, serverTLSInfo, testfakes.NewFixedStore())
@@ -19,57 +37,35 @@ func TestResourceGroup(t *testing.T) {
 	}()
 	defer srv.Stop()
 
-	hcl := `
-		resource "matchbox_group" "default" {
-			name    = "default"
-			profile = "foo"
-			selector = {
-				  qux = "baz"
-			}
-
-			metadata = {
-				foo = "bar"
-			}
-		}
-	`
-
-	check := func(s *terraform.State) error {
-		grp, err := srv.Store.GroupGet("default")
-		if err != nil {
-			return err
-		}
-
-		if grp.GetId() != "default" {
-			return fmt.Errorf("id, found %q", grp.GetId())
-		}
-
-		if grp.GetProfile() != "foo" {
-			return fmt.Errorf("profile, found %q", grp.GetProfile())
-		}
-
-		selector := grp.GetSelector()
-		if len(selector) != 1 || selector["qux"] != "baz" {
-			return fmt.Errorf("selector.qux, found %q", selector["qux"])
-		}
-
-		if string(grp.GetMetadata()) != "{\"foo\":\"bar\"}" {
-			return fmt.Errorf("metadata, found %q", grp.GetProfile())
-		}
-
-		return nil
-	}
-
 	resource.UnitTest(t, resource.TestCase{
 		Providers: testProviders,
-		Steps: []resource.TestStep{{
-			Config: srv.AddProviderConfig(hcl),
-			Check:  check,
-		}},
+		Steps: []resource.TestStep{
+			{
+				Config: srv.AddProviderConfig(groupWithAllFields),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("matchbox_group.default", "id", "default"),
+					resource.TestCheckResourceAttr("matchbox_group.default", "profile", "worker"),
+					resource.TestCheckResourceAttr("matchbox_group.default", "selector.%", "1"),
+					resource.TestCheckResourceAttr("matchbox_group.default", "selector.os", "installed"),
+					resource.TestCheckResourceAttr("matchbox_group.default", "metadata.%", "1"),
+					resource.TestCheckResourceAttr("matchbox_group.default", "metadata.user", "core"),
+				),
+			},
+			{
+				Config: srv.AddProviderConfig(groupMinimal),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("matchbox_group.default", "id", "minimal"),
+					resource.TestCheckResourceAttr("matchbox_group.default", "profile", "worker"),
+					resource.TestCheckResourceAttr("matchbox_group.default", "selector.%", "0"),
+					resource.TestCheckResourceAttr("matchbox_group.default", "metadata.%", "0"),
+				),
+			},
+		},
 	})
 }
 
-// TestResourceGroup_Read checks the provider compares the desired state with the actual matchbox state and not only
-// the Terraform state.
+// TestResourceGroup_Read checks the provider compares the desired state with
+// the actual matchbox state
 func TestResourceGroup_Read(t *testing.T) {
 	srv := NewFixtureServer(clientTLSInfo, serverTLSInfo, testfakes.NewFixedStore())
 	go func() {
@@ -80,34 +76,40 @@ func TestResourceGroup_Read(t *testing.T) {
 	}()
 	defer srv.Stop()
 
-	hcl := `
-		resource "matchbox_group" "default" {
-			name    = "default"
-			profile = "foo"
-			selector = {
-				  qux = "baz"
-			}
-
-			metadata = {
-				foo = "bar"
-			}
-		}
-	`
-
 	resource.UnitTest(t, resource.TestCase{
 		Providers: testProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: srv.AddProviderConfig(hcl),
+				Config: srv.AddProviderConfig(groupWithAllFields),
 			},
 			{
 				PreConfig: func() {
+					// mutate resource on matchbox server
 					group, _ := srv.Store.GroupGet("default")
-					group.Selector["bux"] = "qux"
+					group.Profile = "altered"
 				},
-				Config:             srv.AddProviderConfig(hcl),
+				Config:             srv.AddProviderConfig(groupWithAllFields),
 				PlanOnly:           true,
 				ExpectNonEmptyPlan: true,
+			},
+			// leave selector and metadata empty
+			{
+				Config: srv.AddProviderConfig(groupMinimal),
+			},
+			{
+				Config:             srv.AddProviderConfig(groupWithAllFields),
+				PlanOnly:           true,
+				ExpectNonEmptyPlan: true,
+			},
+			// real matchbox empty metadata is an empty []byte
+			{
+				PreConfig: func() {
+					// mutate resource on matchbox server
+					group, _ := srv.Store.GroupGet("minimal")
+					group.Metadata = []byte("")
+				},
+				Config:   srv.AddProviderConfig(groupMinimal),
+				PlanOnly: true,
 			},
 		},
 	})

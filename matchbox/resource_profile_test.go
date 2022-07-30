@@ -181,8 +181,8 @@ func TestResourceProfile_withIgnitionAndContainerLinuxConfig(t *testing.T) {
 	})
 }
 
-// TestResourceProfile_Read checks the provider compares the desired state with the actual matchbox state and not only
-// the Terraform state.
+// TestResourceProfile_Read checks the provider compares the desired state with
+// the actual matchbox state
 func TestResourceProfile_Read(t *testing.T) {
 	srv := NewFixtureServer(clientTLSInfo, serverTLSInfo, testfakes.NewFixedStore())
 	go func() {

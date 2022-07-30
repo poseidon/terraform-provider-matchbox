@@ -95,15 +95,18 @@ func resourceGroupRead(ctx context.Context, d *schema.ResourceData, meta interfa
 
 	group := groupGetResponse.Group
 
-	var metadata map[string]string
-	if err := json.Unmarshal(group.Metadata, &metadata); err != nil {
-		return diag.FromErr(err)
-	}
 	if err := d.Set("selector", group.Selector); err != nil {
 		return diag.FromErr(err)
 	}
 	if err := d.Set("profile", group.Profile); err != nil {
 		return diag.FromErr(err)
+	}
+
+	var metadata map[string]string
+	if len(group.Metadata) > 0 {
+		if err := json.Unmarshal(group.Metadata, &metadata); err != nil {
+			return diag.FromErr(err)
+		}
 	}
 	if err := d.Set("metadata", metadata); err != nil {
 		return diag.FromErr(err)
