@@ -20,7 +20,7 @@ terraform {
   required_providers {
     matchbox = {
       source = "poseidon/matchbox"
-      version = "0.4.1"
+      version = "0.5.1"
     }
   }
 }
@@ -29,35 +29,38 @@ terraform {
 Define a Matchbox Profile or Group resource in Terraform.
 
 ```tf
-// Create a Container Linux install profile
-resource "matchbox_profile" "container-linux-install" {
-  name = "container-linux-install"
-  kernel = "/assets/coreos/${var.container_linux_version}/coreos_production_pxe.vmlinuz"
+// Fedora CoreOS profile
+resource "matchbox_profile" "fedora-coreos-install" {
+  name  = "worker"
+  kernel = "https://builds.coreos.fedoraproject.org/prod/streams/${var.os_stream}/builds/${var.os_version}/x86_64/fedora-coreos-${var.os_version}-live-kernel-x86_64"
+
   initrd = [
-    "/assets/coreos/${var.container_linux_version}/coreos_production_pxe_image.cpio.gz"
+    "--name main https://builds.coreos.fedoraproject.org/prod/streams/${var.os_stream}/builds/${var.os_version}/x86_64/fedora-coreos-${var.os_version}-live-initramfs.x86_64.img"
   ]
+
   args = [
-    "coreos.config.url=http://${var.matchbox_http_endpoint}/ignition?uuid=$${uuid}&mac=$${mac:hexhyp}",
-    "coreos.first_boot=yes",
-    "console=tty0",
-    "console=ttyS0",
-    "coreos.autologin"
+    "initrd=main",
+    "coreos.live.rootfs_url=https://builds.coreos.fedoraproject.org/prod/streams/${var.os_stream}/builds/${var.os_version}/x86_64/fedora-coreos-${var.os_version}-live-rootfs.x86_64.img",
+    "coreos.inst.install_dev=/dev/sda",
+    "coreos.inst.ignition_url=${var.matchbox_http_endpoint}/ignition?uuid=$${uuid}&mac=$${mac:hexhyp}"
   ]
-  container_linux_config = "${file("./cl/coreos-install.yaml.tmpl")}"
-  generic_config = "${file("./example.ks")}"
+
+  raw_ignition = data.ct_config.worker.rendered
 }
 
-// Match a bare-metal machine
-resource "matchbox_group" "node1" {
-  name = "node1"
-  profile = "${matchbox_profile.container-linux-install.name}"
-  selector = {
-    mac = "52:54:00:a1:9c:ae"
-  }
-  metadata = {
-    custom_variable = "machine_specific_value_here"
-    ssh_authorized_key = "${var.ssh_authorized_key}"
-  }
+data "ct_config" "worker" {
+  content = templatefile("fcc/fedora-coreos.yaml", {
+    ssh_authorized_key = var.ssh_authorized_key
+  })
+  strict = true
+}
+
+// Default matcher group for machines
+resource "matchbox_group" "default" {
+  name    = "default"
+  profile = matchbox_profile.fedora-coreos-install.name
+  selector = {}
+  metadata = {}
 }
 ```
 

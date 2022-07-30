@@ -4,6 +4,12 @@ Notable changes between releases.
 
 ## Latest
 
+## v0.5.1
+
+* Read profile and group's to detect drift ([#68](https://github.com/poseidon/terraform-provider-matchbox/pull/68))
+* Update minimum Go version to v1.17
+* UpdateTerraform Plugin SDK
+
 ## v0.5.0
 
 * Migrate Terraform Plugin SDK from v1.9.0 to v2.8.0
