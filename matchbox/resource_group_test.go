@@ -1,9 +1,13 @@
 package matchbox
 
 import (
+	"fmt"
+	"reflect"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
+	"github.com/poseidon/matchbox/matchbox/storage/storagepb"
 	"github.com/poseidon/matchbox/matchbox/storage/testfakes"
 )
 
@@ -49,6 +53,12 @@ func TestResourceGroup(t *testing.T) {
 					resource.TestCheckResourceAttr("matchbox_group.default", "selector.os", "installed"),
 					resource.TestCheckResourceAttr("matchbox_group.default", "metadata.%", "1"),
 					resource.TestCheckResourceAttr("matchbox_group.default", "metadata.user", "core"),
+					checkMatchboxGroup(srv, &storagepb.Group{
+						Id:       "default",
+						Profile:  "worker",
+						Selector: map[string]string{"os": "installed"},
+						Metadata: []byte(`{"user":"core"}`),
+					}),
 				),
 			},
 			{
@@ -58,6 +68,11 @@ func TestResourceGroup(t *testing.T) {
 					resource.TestCheckResourceAttr("matchbox_group.default", "profile", "worker"),
 					resource.TestCheckResourceAttr("matchbox_group.default", "selector.%", "0"),
 					resource.TestCheckResourceAttr("matchbox_group.default", "metadata.%", "0"),
+					checkMatchboxGroup(srv, &storagepb.Group{
+						Id:       "minimal",
+						Profile:  "worker",
+						Metadata: []byte(`{}`),
+					}),
 				),
 			},
 		},
@@ -113,4 +128,18 @@ func TestResourceGroup_Read(t *testing.T) {
 			},
 		},
 	})
+}
+
+func checkMatchboxGroup(srv *FixtureServer, expected *storagepb.Group) resource.TestCheckFunc {
+	fn := func(s *terraform.State) error {
+		grp, err := srv.Store.GroupGet(expected.Id)
+		if err != nil {
+			return err
+		}
+		if !reflect.DeepEqual(grp, expected) {
+			return fmt.Errorf("expected %+v, got %+v", expected, grp)
+		}
+		return nil
+	}
+	return fn
 }

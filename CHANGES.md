@@ -4,6 +4,10 @@ Notable changes between releases.
 
 ## Latest
 
+## v0.5.2
+
+* Fix regression in matchbox_group reading of empty metadata ([#104](https://github.com/poseidon/terraform-provider-matchbox/pull/104))
+
 ## v0.5.1
 
 * Read profile and group's to detect drift ([#68](https://github.com/poseidon/terraform-provider-matchbox/pull/68))
