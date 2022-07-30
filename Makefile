@@ -1,5 +1,4 @@
 export CGO_ENABLED:=0
-export GO111MODULE=on
 
 VERSION=$(shell git describe --tags --match=v* --always --dirty)
 SEMVER=$(shell git describe --tags --match=v* --always --dirty | cut -c 2-)
