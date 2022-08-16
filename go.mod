@@ -1,5 +1,7 @@
 module github.com/poseidon/terraform-provider-matchbox
 
+go 1.18
+
 require (
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.20.0
 	github.com/poseidon/matchbox v0.9.1
@@ -53,5 +55,3 @@ require (
 	google.golang.org/genproto v0.0.0-20211208223120-3a66f561d7aa // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
 )
-
-go 1.17

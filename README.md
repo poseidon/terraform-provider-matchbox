@@ -1,4 +1,5 @@
-# terraform-provider-matchbox [![GoDoc](https://pkg.go.dev/badge/github.com/poseidon/terraform-provider-matchbox.svg)](https://pkg.go.dev/github.com/poseidon/terraform-provider-matchbox) [![Workflow](https://github.com/poseidon/terraform-provider-matchbox/actions/workflows/test.yaml/badge.svg)](https://github.com/poseidon/terraform-provider-matchbox/actions/workflows/test.yaml?query=branch%3Amain) ![Downloads](https://img.shields.io/github/downloads/poseidon/terraform-provider-matchbox/total) [![Sponsors](https://img.shields.io/github/sponsors/poseidon?logo=github)](https://github.com/sponsors/poseidon) [![Twitter](https://img.shields.io/badge/follow-news-1da1f2?logo=twitter)](https://twitter.com/poseidonlabs)
+# terraform-provider-matchbox
+[![GoDoc](https://pkg.go.dev/badge/github.com/poseidon/terraform-provider-matchbox.svg)](https://pkg.go.dev/github.com/poseidon/terraform-provider-matchbox) [![Workflow](https://github.com/poseidon/terraform-provider-matchbox/actions/workflows/test.yaml/badge.svg)](https://github.com/poseidon/terraform-provider-matchbox/actions/workflows/test.yaml?query=branch%3Amain) ![Downloads](https://img.shields.io/github/downloads/poseidon/terraform-provider-matchbox/total) [![Sponsors](https://img.shields.io/github/sponsors/poseidon?logo=github)](https://github.com/sponsors/poseidon) [![Twitter](https://img.shields.io/badge/follow-news-1da1f2?logo=twitter)](https://twitter.com/poseidonlabs)
 
 `terraform-provider-matchbox` allows defining [Matchbox](https://github.com/poseidon/matchbox) Profiles and Groups in Terraform. Matchbox matches machines, by label (e.g. MAC address), to Profiles with iPXE configs, Ignition configs, or generic free-form configs to provision clusters. Resources are created via the client certificate authenticated Matchbox API.
 
@@ -20,7 +21,7 @@ terraform {
   required_providers {
     matchbox = {
       source = "poseidon/matchbox"
-      version = "0.5.1"
+      version = "0.5.2"
     }
   }
 }
@@ -82,7 +83,7 @@ See [examples](https://github.com/poseidon/matchbox/tree/master/examples/terrafo
 
 ### Binary
 
-To develop the provider plugin locally, build an executable with Go 1.17+.
+To develop the provider plugin locally, build an executable with Go 1.18+.
 
 ```
 make
