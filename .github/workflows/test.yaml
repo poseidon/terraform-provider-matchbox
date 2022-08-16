@@ -19,7 +19,7 @@ jobs:
           go-version: ${{matrix.go}}
 
       - name: setup Terraform
-        uses: hashicorp/setup-terraform@v1
+        uses: hashicorp/setup-terraform@v2
         with:
           terraform_wrapper: false
 
