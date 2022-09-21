@@ -42,7 +42,7 @@ func TestResourceGroup(t *testing.T) {
 	defer srv.Stop()
 
 	resource.UnitTest(t, resource.TestCase{
-		Providers: testProviders,
+		ProviderFactories: testProviderFactories,
 		Steps: []resource.TestStep{
 			{
 				Config: srv.AddProviderConfig(groupWithAllFields),
@@ -92,7 +92,7 @@ func TestResourceGroup_Read(t *testing.T) {
 	defer srv.Stop()
 
 	resource.UnitTest(t, resource.TestCase{
-		Providers: testProviders,
+		ProviderFactories: testProviderFactories,
 		Steps: []resource.TestStep{
 			{
 				Config: srv.AddProviderConfig(groupWithAllFields),
