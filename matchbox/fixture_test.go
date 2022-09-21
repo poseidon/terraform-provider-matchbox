@@ -2,8 +2,8 @@ package matchbox
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net"
+	"os"
 
 	"github.com/poseidon/matchbox/matchbox/rpc"
 	"github.com/poseidon/matchbox/matchbox/server"
@@ -104,7 +104,7 @@ CA
 
 // mustFile wraps a call to ioutil.ReadFile and panics if the error is non-nil.
 func mustReadFile(filename string) []byte {
-	contents, err := ioutil.ReadFile(filename)
+	contents, err := os.ReadFile(filename)
 	if err != nil {
 		panic(err)
 	}

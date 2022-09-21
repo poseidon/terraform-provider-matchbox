@@ -87,7 +87,7 @@ func TestResourceProfile(t *testing.T) {
 	}
 
 	resource.UnitTest(t, resource.TestCase{
-		Providers: testProviders,
+		ProviderFactories: testProviderFactories,
 		Steps: []resource.TestStep{{
 			Config: srv.AddProviderConfig(hcl),
 			Check:  check,
@@ -145,7 +145,7 @@ func TestResourceProfile_withIgnition(t *testing.T) {
 	}
 
 	resource.UnitTest(t, resource.TestCase{
-		Providers: testProviders,
+		ProviderFactories: testProviderFactories,
 		Steps: []resource.TestStep{{
 			Config: srv.AddProviderConfig(hcl),
 			Check:  check,
@@ -173,7 +173,7 @@ func TestResourceProfile_withIgnitionAndContainerLinuxConfig(t *testing.T) {
 	`
 
 	resource.UnitTest(t, resource.TestCase{
-		Providers: testProviders,
+		ProviderFactories: testProviderFactories,
 		Steps: []resource.TestStep{{
 			Config:      srv.AddProviderConfig(hcl),
 			ExpectError: regexp.MustCompile("are mutually exclusive"),
@@ -211,7 +211,7 @@ func TestResourceProfile_Read(t *testing.T) {
 	`
 
 	resource.UnitTest(t, resource.TestCase{
-		Providers: testProviders,
+		ProviderFactories: testProviderFactories,
 		Steps: []resource.TestStep{
 			{
 				Config: srv.AddProviderConfig(hcl),
