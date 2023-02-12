@@ -55,5 +55,5 @@ data "ct_config" "worker" {
 * `initrd` - List of URLs to init RAM filesystems
 * `args` - List of kernel arguments
 * `raw_ignition` - Fedora CoreOS or Flatcar Linux Ignition content (see [terraform-provider-ct](https://github.com/poseidon/terraform-provider-ct))
+* `generic_config` - Generic configuration
 * `container_linux_config` -  CoreOS Container Linux Config (CLC) (for backwards compatibility)
-
