@@ -3,7 +3,7 @@ module github.com/poseidon/terraform-provider-matchbox
 go 1.18
 
 require (
-	github.com/hashicorp/terraform-plugin-sdk/v2 v2.26.0
+	github.com/hashicorp/terraform-plugin-sdk/v2 v2.26.1
 	github.com/poseidon/matchbox v0.9.1
 	google.golang.org/grpc v1.53.0
 )
