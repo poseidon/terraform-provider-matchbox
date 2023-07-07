@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.27.0
 	github.com/poseidon/matchbox v0.10.0
-	google.golang.org/grpc v1.56.1
+	google.golang.org/grpc v1.56.2
 )
 
 require (
