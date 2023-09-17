@@ -55,6 +55,12 @@ func (r *ProfileResource) Schema(ctx context.Context, req resource.SchemaRequest
 		MarkdownDescription: "Profiles reference an Ignition config, Butane Config, Cloud-Config, and/or generic config by name and define network boot settings.",
 
 		Attributes: map[string]schema.Attribute{
+			"id": schema.StringAttribute{
+				Computed: true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
+			},
 			"name": schema.StringAttribute{
 				Required: true,
 				PlanModifiers: []planmodifier.String{
@@ -68,15 +74,15 @@ func (r *ProfileResource) Schema(ctx context.Context, req resource.SchemaRequest
 				},
 			},
 			"initrd": schema.ListAttribute{
-				Optional:    true,
 				ElementType: types.StringType,
+				Optional:    true,
 				PlanModifiers: []planmodifier.List{
 					listplanmodifier.RequiresReplace(),
 				},
 			},
 			"args": schema.ListAttribute{
-				Optional:    true,
 				ElementType: types.StringType,
+				Optional:    true,
 				PlanModifiers: []planmodifier.List{
 					listplanmodifier.RequiresReplace(),
 				},
@@ -97,12 +103,6 @@ func (r *ProfileResource) Schema(ctx context.Context, req resource.SchemaRequest
 				Optional: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
-				},
-			},
-			"id": schema.StringAttribute{
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
 		},
