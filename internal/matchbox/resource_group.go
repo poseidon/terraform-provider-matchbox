@@ -2,7 +2,6 @@ package matchbox
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 
 	"github.com/hashicorp/terraform-plugin-framework/diag"
@@ -122,23 +121,18 @@ func (r *GroupResource) Create(ctx context.Context, req resource.CreateRequest, 
 	name := data.Name.ValueString()
 
 	selectors := map[string]string{}
-	resp.Diagnostics.Append(data.Selector.ElementsAs(ctx, &selectors, false)...)
-	metadata := map[string]string{}
-	resp.Diagnostics.Append(data.Metadata.ElementsAs(ctx, &metadata, false)...)
+	resp.Diagnostics.Append(data.Selector.ElementsAs(ctx, selectors, false)...)
+	metadata := map[string]interface{}{}
+	resp.Diagnostics.Append(data.Metadata.ElementsAs(ctx, metadata, false)...)
 	if resp.Diagnostics.HasError() {
 		return
-	}
-
-	metadataInt := make(map[string]interface{}, len(metadata))
-	for key, value := range metadata {
-		metadataInt[key] = value
 	}
 
 	richGroup := &storagepb.RichGroup{
 		Id:       name,
 		Profile:  data.Profile.ValueString(),
 		Selector: selectors,
-		Metadata: metadataInt,
+		Metadata: metadata,
 	}
 	group, err := richGroup.ToGroup()
 	if err != nil {
@@ -188,22 +182,15 @@ func (r *GroupResource) Read(ctx context.Context, req resource.ReadRequest, resp
 	var diags diag.Diagnostics
 	selector, diags := types.MapValueFrom(ctx, types.StringType, group.Selector)
 	resp.Diagnostics.Append(diags...)
-
-	var metadata map[string]string
-	if len(group.Metadata) > 0 {
-		if err := json.Unmarshal(group.Metadata, &metadata); err != nil {
-			resp.Diagnostics.AddError("Metadata Unmarshal Failed", err.Error())
-			return
-		}
-	}
-
-	data.Profile = types.StringValue(group.Profile)
-	data.Selector = selector
-	data.Metadata, diags = types.MapValueFrom(ctx, types.StringType, metadata)
+	metadata, diags := types.MapValueFrom(ctx, types.StringType, group.Metadata)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
+
+	data.Profile = types.StringValue(group.Profile)
+	data.Selector = selector
+	data.Metadata = metadata
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
