@@ -1,56 +1,92 @@
 package matchbox
 
 import (
-	"fmt"
+	"context"
 
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-framework/datasource"
+	"github.com/hashicorp/terraform-plugin-framework/provider"
+	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-// Provider returns a Provider for Matchbox.
-func Provider() *schema.Provider {
-	return &schema.Provider{
-		Schema: map[string]*schema.Schema{
-			"endpoint": {
-				Type:     schema.TypeString,
+// Ensure MatchboxProvider satisfies various provider interfaces.
+var _ provider.Provider = &MatchboxProvider{}
+
+// MatchboxProvider defines the provider implementation.
+type MatchboxProvider struct {
+	// version is set to the provider version on release, "dev" when the
+	// provider is built and ran locally, and "test" when running acceptance
+	// testing.
+	version string
+}
+
+// MatchboxProviderModel describes the provider data model.
+type MatchboxProviderModel struct {
+	Endpoint   types.String `tfsdk:"endpoint"`
+	ClientCert types.String `tfsdk:"client_cert"`
+	ClientKey  types.String `tfsdk:"client_key"`
+	CA         types.String `tfsdk:"ca"`
+}
+
+func (p *MatchboxProvider) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
+	resp.TypeName = "matchbox"
+	resp.Version = p.version
+}
+
+func (p *MatchboxProvider) Schema(ctx context.Context, req provider.SchemaRequest, resp *provider.SchemaResponse) {
+	resp.Schema = schema.Schema{
+		Attributes: map[string]schema.Attribute{
+			"endpoint": schema.StringAttribute{
 				Required: true,
 			},
-			"client_cert": {
-				Type:     schema.TypeString,
+			"client_cert": schema.StringAttribute{
 				Required: true,
 			},
-			"client_key": {
-				Type:     schema.TypeString,
+			"client_key": schema.StringAttribute{
 				Required: true,
 			},
-			"ca": {
-				Type:     schema.TypeString,
+			"ca": schema.StringAttribute{
 				Required: true,
 			},
 		},
-		ResourcesMap: map[string]*schema.Resource{
-			"matchbox_profile": resourceProfile(),
-			"matchbox_group":   resourceGroup(),
-		},
-		ConfigureFunc: providerConfigure,
 	}
 }
 
-func providerConfigure(d *schema.ResourceData) (interface{}, error) {
-	ca := d.Get("ca").(string)
-	clientCert := d.Get("client_cert").(string)
-	clientKey := d.Get("client_key").(string)
-	endpoint := d.Get("endpoint").(string)
+func (p *MatchboxProvider) Configure(ctx context.Context, req provider.ConfigureRequest, resp *provider.ConfigureResponse) {
+	var data MatchboxProviderModel
 
-	config := &Config{
-		Endpoint:   endpoint,
-		ClientCert: []byte(clientCert),
-		ClientKey:  []byte(clientKey),
-		CA:         []byte(ca),
+	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
+
+	if resp.Diagnostics.HasError() {
+		return
 	}
 
-	client, err := NewMatchboxClient(config)
+	client, err := NewMatchboxClient(&data)
 	if err != nil {
-		return client, fmt.Errorf("failed to create Matchbox client or connect to %s: %v", endpoint, err)
+		resp.Diagnostics.AddError("oops", err.Error())
 	}
-	return client, err
+
+	resp.DataSourceData = client
+	resp.ResourceData = client
+}
+
+func (p *MatchboxProvider) Resources(ctx context.Context) []func() resource.Resource {
+	return []func() resource.Resource{
+		resourceGroup,
+		resourceProfile,
+	}
+}
+
+func (p *MatchboxProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
+	return []func() datasource.DataSource{}
+}
+
+// New returns a Provider for Matchbox.
+func New(version string) func() provider.Provider {
+	return func() provider.Provider {
+		return &MatchboxProvider{
+			version: version,
+		}
+	}
 }

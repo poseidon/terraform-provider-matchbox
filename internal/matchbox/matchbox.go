@@ -24,13 +24,17 @@ type Config struct {
 }
 
 // NewMatchboxClient returns a new matchbox.Client.
-func NewMatchboxClient(config *Config) (*matchbox.Client, error) {
-	tlscfg, err := tlsConfig(config.CA, config.ClientCert, config.ClientKey)
+func NewMatchboxClient(config *MatchboxProviderModel) (*matchbox.Client, error) {
+	tlscfg, err := tlsConfig(
+		[]byte(config.CA.ValueString()),
+		[]byte(config.ClientCert.ValueString()),
+		[]byte(config.ClientKey.ValueString()),
+	)
 	if err != nil {
 		return nil, err
 	}
 	return matchbox.New(&matchbox.Config{
-		Endpoints:   []string{config.Endpoint},
+		Endpoints:   []string{config.Endpoint.ValueString()},
 		DialTimeout: defaultTimeout,
 		TLS:         tlscfg,
 	})
