@@ -73,8 +73,8 @@ func (p *MatchboxProvider) Configure(ctx context.Context, req provider.Configure
 
 func (p *MatchboxProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
-		resourceGroup,
-		resourceProfile,
+		NewGroupResource,
+		NewProfileResource,
 	}
 }
 

@@ -5,8 +5,9 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
+	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/terraform"
+
 	"github.com/poseidon/matchbox/matchbox/storage/storagepb"
 	"github.com/poseidon/matchbox/matchbox/storage/testfakes"
 )
@@ -41,8 +42,9 @@ func TestResourceGroup(t *testing.T) {
 	}()
 	defer srv.Stop()
 
-	resource.UnitTest(t, resource.TestCase{
-		ProviderFactories: testProviderFactories,
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
 				Config: srv.AddProviderConfig(groupWithAllFields),
@@ -91,8 +93,9 @@ func TestResourceGroup_Read(t *testing.T) {
 	}()
 	defer srv.Stop()
 
-	resource.UnitTest(t, resource.TestCase{
-		ProviderFactories: testProviderFactories,
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
 				Config: srv.AddProviderConfig(groupWithAllFields),

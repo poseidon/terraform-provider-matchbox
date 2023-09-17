@@ -5,8 +5,9 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
+	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/terraform"
+
 	"github.com/poseidon/matchbox/matchbox/storage/testfakes"
 )
 
@@ -86,14 +87,14 @@ func TestResourceProfile(t *testing.T) {
 		return nil
 	}
 
-	resource.UnitTest(t, resource.TestCase{
-		ProviderFactories: testProviderFactories,
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{{
 			Config: srv.AddProviderConfig(hcl),
 			Check:  check,
 		}},
 	})
-
 }
 
 func TestResourceProfile_withIgnition(t *testing.T) {
@@ -144,8 +145,9 @@ func TestResourceProfile_withIgnition(t *testing.T) {
 		return nil
 	}
 
-	resource.UnitTest(t, resource.TestCase{
-		ProviderFactories: testProviderFactories,
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{{
 			Config: srv.AddProviderConfig(hcl),
 			Check:  check,
@@ -172,8 +174,9 @@ func TestResourceProfile_withIgnitionAndContainerLinuxConfig(t *testing.T) {
 		}
 	`
 
-	resource.UnitTest(t, resource.TestCase{
-		ProviderFactories: testProviderFactories,
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{{
 			Config:      srv.AddProviderConfig(hcl),
 			ExpectError: regexp.MustCompile("are mutually exclusive"),
@@ -210,8 +213,9 @@ func TestResourceProfile_Read(t *testing.T) {
 		}
 	`
 
-	resource.UnitTest(t, resource.TestCase{
-		ProviderFactories: testProviderFactories,
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
 				Config: srv.AddProviderConfig(hcl),

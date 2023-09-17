@@ -36,7 +36,7 @@ type ProfileResource struct {
 
 // ProfileResourceModel describes the resource data model.
 type ProfileResourceModel struct {
-	Id                   types.String
+	Id                   types.String `tfsdk:"id"`
 	Name                 types.String `tfsdk:"name"`
 	Kernel               types.String `tfsdk:"kernel"`
 	Initrd               types.List   `tfsdk:"initrd"`
@@ -68,7 +68,7 @@ func (r *ProfileResource) Schema(ctx context.Context, req resource.SchemaRequest
 				},
 			},
 			"kernel": schema.StringAttribute{
-				Required: true,
+				Optional: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
 				},
@@ -151,8 +151,8 @@ func (r *ProfileResource) Create(ctx context.Context, req resource.CreateRequest
 	kernel := data.Kernel.ValueString()
 	// NetBoot
 	var initrds, args []string
-	resp.Diagnostics.Append(data.Initrd.ElementsAs(ctx, initrds, false)...)
-	resp.Diagnostics.Append(data.Args.ElementsAs(ctx, args, false)...)
+	resp.Diagnostics.Append(data.Initrd.ElementsAs(ctx, &initrds, false)...)
+	resp.Diagnostics.Append(data.Args.ElementsAs(ctx, &args, false)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -295,6 +295,9 @@ func (r *ProfileResource) Update(ctx context.Context, req resource.UpdateRequest
 	)
 }
 
+// resourceProfileDelete deletes a Profile and its associated configs. Partial
+// deletes leave state unchanged and can be retried (deleting resources which
+// no longer exist is a no-op).
 func (r *ProfileResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 	var data ProfileResourceModel
 
@@ -339,47 +342,6 @@ func (r *ProfileResource) Delete(ctx context.Context, req resource.DeleteRequest
 
 func (r *ProfileResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
-}
-
-// resourceProfileDelete deletes a Profile and its associated configs. Partial
-// deletes leave state unchanged and can be retried (deleting resources which
-// no longer exist is a no-op).
-func resourceProfileDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	var diags diag.Diagnostics
-	client := meta.(*matchbox.Client)
-
-	// Profile
-	name := d.Get("name").(string)
-	_, err := client.Profiles.ProfileDelete(ctx, &serverpb.ProfileDeleteRequest{
-		Id: name,
-	})
-	if err != nil {
-		return diag.FromErr(err)
-	}
-
-	// Container Linux Config
-	if name, content := containerLinuxConfig(d); content != "" {
-		_, err = client.Ignition.IgnitionDelete(ctx, &serverpb.IgnitionDeleteRequest{
-			Name: name,
-		})
-		if err != nil {
-			return diag.FromErr(err)
-		}
-	}
-
-	// Generic Config
-	if name, content := genericConfig(d); content != "" {
-		_, err = client.Generic.GenericDelete(ctx, &serverpb.GenericDeleteRequest{
-			Name: name,
-		})
-		if err != nil {
-			return diag.FromErr(err)
-		}
-	}
-
-	// resource can be destroyed in state
-	d.SetId("")
-	return diags
 }
 
 func containerLinuxConfig(data *ProfileResourceModel) (filename, config string) {

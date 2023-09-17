@@ -13,8 +13,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
-	matchbox "github.com/poseidon/matchbox/matchbox/client"
 
+	matchbox "github.com/poseidon/matchbox/matchbox/client"
 	"github.com/poseidon/matchbox/matchbox/server/serverpb"
 	"github.com/poseidon/matchbox/matchbox/storage/storagepb"
 )
@@ -34,7 +34,7 @@ type GroupResource struct {
 
 // GroupResourceModel describes the resource data model.
 type GroupResourceModel struct {
-	Id       types.String
+	Id       types.String `tfsdk:"id"`
 	Name     types.String `tfsdk:"name"`
 	Profile  types.String `tfsdk:"profile"`
 	Selector types.Map    `tfsdk:"selector"`
