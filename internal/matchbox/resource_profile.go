@@ -158,8 +158,8 @@ func (r *ProfileResource) Create(ctx context.Context, req resource.CreateRequest
 	}
 
 	// Container Linux config / Ignition config
-	clcName, clcContent := containerLinuxConfig(&data)
-	genericName, genericContent := genericConfig(&data)
+	clcName, _ := containerLinuxConfig(&data)
+	genericName, _ := genericConfig(&data)
 
 	profile := &storagepb.Profile{
 		Id: name,
@@ -182,10 +182,10 @@ func (r *ProfileResource) Create(ctx context.Context, req resource.CreateRequest
 	}
 
 	// Container Linux Config
-	if clcContent != "" {
+	if name, content := containerLinuxConfig(&data); content != "" {
 		_, err := r.client.Ignition.IgnitionPut(ctx, &serverpb.IgnitionPutRequest{
 			Name:   name,
-			Config: []byte(clcContent),
+			Config: []byte(content),
 		})
 		if err != nil {
 			resp.Diagnostics.AddError("Ignition Config Create Failed", err.Error())
@@ -194,10 +194,10 @@ func (r *ProfileResource) Create(ctx context.Context, req resource.CreateRequest
 	}
 
 	// Generic Config
-	if genericContent != "" {
+	if name, content := genericConfig(&data); content != "" {
 		_, err := r.client.Generic.GenericPut(ctx, &serverpb.GenericPutRequest{
 			Name:   name,
-			Config: []byte(genericContent),
+			Config: []byte(content),
 		})
 		if err != nil {
 			resp.Diagnostics.AddError("Generic Config Create Failed", err.Error())
