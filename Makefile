@@ -14,7 +14,7 @@ bin/terraform-provider-matchbox:
 
 .PHONY: test
 test:
-	@go test ./... -cover
+	@env TF_ACC=1 go test ./... -cover
 
 .PHONY: vet
 vet:
