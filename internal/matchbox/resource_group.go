@@ -54,8 +54,7 @@ func (r *GroupResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: "Example identifier",
+				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -183,7 +182,7 @@ func (r *GroupResource) Read(ctx context.Context, req resource.ReadRequest, resp
 		Id: name,
 	})
 	if err != nil {
-		// Resouurce doesn't exist anymore
+		// Resource doesn't exist anymore
 		data.Id = types.StringNull()
 		return
 	}
