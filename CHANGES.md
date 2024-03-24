@@ -4,6 +4,10 @@ Notable changes between releases.
 
 ## Latest
 
+## v0.5.3
+
+* Maintenance update to bump dependencies
+
 ## v0.5.2
 
 * Fix regression in matchbox_group reading of empty metadata ([#104](https://github.com/poseidon/terraform-provider-matchbox/pull/104))
