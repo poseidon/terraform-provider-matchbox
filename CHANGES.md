@@ -4,9 +4,15 @@ Notable changes between releases.
 
 ## Latest
 
+## v0.5.4
+
+* Fix release signing process to use a compatible OpenPGP key algorithm
+  * Terraform Registry does not support ed25519, sign with the RSA key like in past releases
+
 ## v0.5.3
 
 * Maintenance update to bump dependencies
+* Skip this release, it was signed with the wrong key
 
 ## v0.5.2
 
