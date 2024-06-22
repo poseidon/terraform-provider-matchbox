@@ -1,7 +1,7 @@
 export CGO_ENABLED:=0
 
-VERSION=$(shell git describe --tags --match=v* --always --dirty)
-SEMVER=$(shell git describe --tags --match=v* --always --dirty | cut -c 2-)
+VERSION=$(shell git describe --tags --match=v* --always)
+SEMVER=$(shell git describe --tags --match=v* --always | cut -c 2-)
 
 .PHONY: all
 all: build test vet fmt
@@ -39,10 +39,13 @@ release: \
 
 _output/plugin-%.zip: NAME=terraform-provider-matchbox_$(SEMVER)_$(subst -,_,$*)
 _output/plugin-%.zip: DEST=_output/$(NAME)
+_output/plugin-%.zip: LOCAL=$(HOME)/.terraform.d/plugins/terraform.localhost/poseidon/matchbox/$(SEMVER)
 _output/plugin-%.zip: _output/%/terraform-provider-matchbox
 	@mkdir -p $(DEST)
 	@cp _output/$*/terraform-provider-matchbox $(DEST)/terraform-provider-matchbox_$(VERSION)
 	@zip -j $(DEST).zip $(DEST)/terraform-provider-matchbox_$(VERSION)
+	@mkdir -p $(LOCAL)/$(subst -,_,$*)
+	@cp _output/$*/terraform-provider-matchbox $(LOCAL)/$(subst -,_,$*)/terraform-provider-matchbox_$(VERSION)
 
 _output/linux-amd64/terraform-provider-matchbox: GOARGS = GOOS=linux GOARCH=amd64
 _output/linux-arm64/terraform-provider-matchbox: GOARGS = GOOS=linux GOARCH=arm64
