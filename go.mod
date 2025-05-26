@@ -7,7 +7,7 @@ toolchain go1.24.3
 require (
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.37.0
 	github.com/poseidon/matchbox v0.11.0
-	google.golang.org/grpc v1.72.1
+	google.golang.org/grpc v1.72.2
 )
 
 require (
