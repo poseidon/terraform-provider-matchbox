@@ -2,7 +2,7 @@ module github.com/poseidon/terraform-provider-matchbox
 
 go 1.25.0
 
-toolchain go1.26.1
+toolchain go1.26.2
 
 require (
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.40.0
